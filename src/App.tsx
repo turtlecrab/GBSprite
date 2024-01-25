@@ -4,8 +4,11 @@ import { Canvas } from './components/Canvas'
 import { Palette } from './components/Palette'
 import { useStore } from './store'
 import { Debug } from './components/Debug'
+import { useHotkeys } from './hooks/useHotkeys'
 
 export default function App() {
+  useHotkeys()
+
   const clearPixels = useStore(state => state.clearPixels)
 
   return (
