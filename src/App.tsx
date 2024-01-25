@@ -1,10 +1,10 @@
 import { styled } from '@linaria/react'
 
 import { Canvas } from './components/Canvas'
-import { Palette } from './components/Palette'
-import { useStore } from './store'
 import { Debug } from './components/Debug'
+import { Palette } from './components/Palette'
 import { useHotkeys } from './hooks/useHotkeys'
+import { useStore } from './store'
 
 export default function App() {
   useHotkeys()

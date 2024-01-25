@@ -1,8 +1,8 @@
 import { styled } from '@linaria/react'
+import { useEffect } from 'react'
 
 import { useStore } from '../store'
 import { Cell } from './Cell'
-import { useEffect } from 'react'
 
 export function Canvas() {
   const pixelWidth = useStore(state => state.spriteSize * state.width)

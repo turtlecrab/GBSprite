@@ -1,4 +1,5 @@
 import { styled } from '@linaria/react'
+
 import { useStore } from '../store'
 
 export function Debug() {

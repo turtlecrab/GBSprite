@@ -114,6 +114,6 @@ export const useStore = create<State>()(
         pixels: state.pixels,
         color: state.color,
       }),
-    }
-  )
+    },
+  ),
 )
