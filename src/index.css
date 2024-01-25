@@ -9,6 +9,8 @@
 
 body {
   margin: 0;
+  padding: 32px;
   min-width: 320px;
-  min-height: 100dvh;
+
+  --pixel-size: 32px;
 }
