@@ -3,6 +3,7 @@ import { styled } from '@linaria/react'
 import { Canvas } from './components/Canvas'
 import { Palette } from './components/Palette'
 import { useStore } from './store'
+import { Debug } from './components/Debug'
 
 export default function App() {
   const clearPixels = useStore(state => state.clearPixels)
@@ -13,6 +14,7 @@ export default function App() {
       <Palette />
       <Canvas />
       <ClearButton onClick={clearPixels}>Clear</ClearButton>
+      <Debug />
     </Main>
   )
 }
