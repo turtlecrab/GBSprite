@@ -5,6 +5,7 @@ import { useStore } from '../store'
 export function useHotkeys() {
   const setColor = useStore(state => state.setColor)
   const setTool = useStore(state => state.setTool)
+  const setTempEyeDropper = useStore(state => state.setTempEyeDropper)
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -18,9 +19,28 @@ export function useHotkeys() {
         case 'KeyG': setTool('bucket'); break
       }
     }
+    function handleKeyDown(e: KeyboardEvent) {
+      if (!e.repeat && (e.altKey || e.ctrlKey)) {
+        setTempEyeDropper(true)
+      }
+    }
+    function handleKeyUp(e: KeyboardEvent) {
+      if (!e.altKey && !e.ctrlKey) {
+        setTempEyeDropper(false)
+      }
+    }
+    function resetTempEyeDropper() {
+      setTempEyeDropper(false)
+    }
     document.addEventListener('keypress', handleKey)
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keyup', handleKeyUp)
+    window.addEventListener('blur', resetTempEyeDropper)
     return () => {
       document.removeEventListener('keypress', handleKey)
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keyup', handleKeyUp)
+      window.removeEventListener('blur', resetTempEyeDropper)
     }
-  }, [setColor, setTool])
+  }, [setColor, setTool, setTempEyeDropper])
 }

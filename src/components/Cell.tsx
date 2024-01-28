@@ -35,9 +35,9 @@ const CellView = styled.div<{ $color: string }>`
   aspect-ratio: 1;
   background-color: ${p => p.$color};
   box-sizing: content-box;
-  cursor: crosshair;
+  cursor: var(--cell-cursor);
 
   &:hover {
-    border: 1px solid red;
+    background-color: var(--cell-hover-color, ${p => p.$color});
   }
 `

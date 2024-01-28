@@ -18,11 +18,13 @@ export interface State {
   color: number
   tool: Tool
   dragging: boolean
+  tempEyeDropper: boolean
 
   setColor: (color: number) => void
   setPixel: (index: number) => void
   setDragging: (drag: boolean) => void
   setTool: (tool: Tool) => void
+  setTempEyeDropper: (value: boolean) => void
   startDragging: (index: number) => void
   hoverCell: (index: number) => void
   clearPixels: () => void
@@ -41,6 +43,7 @@ export const useStore = create<State>()(
       color: 3,
       tool: 'pencil',
       dragging: false,
+      tempEyeDropper: false,
 
       setColor: color => set({ color }),
       setPixel: index =>
@@ -49,8 +52,15 @@ export const useStore = create<State>()(
         })),
       setDragging: dragging => set({ dragging }),
       setTool: tool => set({ tool }),
+      setTempEyeDropper: value => set({ tempEyeDropper: value }),
+      clearPixels: () => set(state => ({ pixels: state.pixels.map(_ => 0) })),
 
       startDragging: index => {
+        if (get().tempEyeDropper) {
+          get().setColor(get().pixels[index])
+          get().setTempEyeDropper(false)
+          return
+        }
         switch (get().tool) {
           case 'pencil':
             get().setPixel(index)
@@ -69,7 +79,6 @@ export const useStore = create<State>()(
             break
         }
       },
-      clearPixels: () => set(state => ({ pixels: state.pixels.map(_ => 0) })),
       fill: index => {
         const pixels = [...get().pixels]
         const width = get().width * DEFAULT_SPRITE_SIZE

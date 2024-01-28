@@ -9,8 +9,12 @@
 
 body {
   margin: 0;
-  padding: 32px;
-  min-width: 320px;
+  color: #212529;
 
   --pixel-size: 32px;
+}
+
+#root {
+  width: fit-content;
+  margin-inline: auto;
 }

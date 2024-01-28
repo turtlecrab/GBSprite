@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 import { useEffect } from 'react'
 
 import { useStore } from '../store'
+import { CanvasSideEffects } from './CanvasSideEffects'
 import { Cell } from './Cell'
 
 export function Canvas() {
@@ -28,6 +29,7 @@ export function Canvas() {
         .map((_, i) => (
           <Cell key={i} index={i}></Cell>
         ))}
+      <CanvasSideEffects />
     </Container>
   )
 }
@@ -38,5 +40,5 @@ const Container = styled.div<{ $width: number }>`
   border: 1px solid lightgray;
 
   grid-template-columns: repeat(${p => p.$width}, minmax(0, 1fr));
-  max-width: calc(var(--pixel-size) * ${p => p.$width});
+  width: calc(var(--pixel-size) * ${p => p.$width});
 `
