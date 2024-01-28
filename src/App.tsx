@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 
 import { Canvas } from './components/Canvas'
 import { Debug } from './components/Debug'
+import { Export } from './components/Export'
 import { Palette } from './components/Palette'
 import { Tools } from './components/Tools'
 import { useHotkeys } from './hooks/useHotkeys'
@@ -21,6 +22,7 @@ export default function App() {
       </Top>
       <Canvas />
       <ClearButton onClick={clearPixels}>Clear</ClearButton>
+      <Export />
       <Debug />
     </Main>
   )
