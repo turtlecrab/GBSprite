@@ -1,5 +1,5 @@
 import { styled } from '@linaria/react'
-import { LuPaintBucket, LuPencil, LuUndo2 } from 'react-icons/lu'
+import { LuPaintBucket, LuPencil, LuRedo2, LuUndo2 } from 'react-icons/lu'
 
 import { Tool, useStore } from '../store'
 
@@ -12,6 +12,9 @@ export function Tools() {
   const tool = useStore(state => state.tool)
   const setTool = useStore(state => state.setTool)
   const undo = useStore(state => state.undo)
+  const redo = useStore(state => state.redo)
+  const canUndo = useStore(state => state.history.length > 0)
+  const canRedo = useStore(state => state.redoHistory.length > 0)
 
   return (
     <Container>
@@ -25,8 +28,11 @@ export function Tools() {
           <Icon tool={t as Tool} />
         </ToolButton>
       ))}
-      <ToolButton $selected={false} onClick={undo}>
+      <ToolButton $selected={false} onClick={undo} disabled={!canUndo}>
         <LuUndo2 size="100%" />
+      </ToolButton>
+      <ToolButton $selected={false} onClick={redo} disabled={!canRedo}>
+        <LuRedo2 size="100%" />
       </ToolButton>
     </Container>
   )
@@ -58,4 +64,9 @@ const ToolButton = styled.button<{ $selected: boolean }>`
   align-items: center;
   justify-content: center;
   color: inherit;
+
+  &:disabled {
+    cursor: not-allowed;
+    color: lavender;
+  }
 `

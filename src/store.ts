@@ -20,6 +20,7 @@ export interface State {
   dragging: boolean
   tempEyeDropper: boolean
   history: number[][]
+  redoHistory: number[][]
 
   setColor: (color: number) => void
   setPixel: (index: number) => void
@@ -33,6 +34,7 @@ export interface State {
   clearPixels: () => void
   fill: (index: number) => void
   undo: () => void
+  redo: () => void
 }
 
 export const useStore = create<State>()(
@@ -49,6 +51,7 @@ export const useStore = create<State>()(
       dragging: false,
       tempEyeDropper: false,
       history: [],
+      redoHistory: [],
 
       setColor: color => set({ color }),
       setPixel: index =>
@@ -82,10 +85,14 @@ export const useStore = create<State>()(
         }
       },
       stopDragging: () => {
+        if (!get().dragging) return
         get().setDragging(false)
       },
       pushPixelsToHistory: () => {
-        set(state => ({ history: [...state.history, [...state.pixels]] }))
+        set(state => ({
+          history: [...state.history, [...state.pixels]],
+          redoHistory: [],
+        }))
       },
       hoverCell: index => {
         if (!get().dragging) return
@@ -135,7 +142,18 @@ export const useStore = create<State>()(
         const prev = get().history.at(-1)
         set({
           history: get().history.slice(0, -1),
+          redoHistory: [...get().redoHistory, get().pixels],
           pixels: prev,
+        })
+      },
+      redo: () => {
+        if (get().redoHistory.length === 0) return
+
+        const next = get().redoHistory.at(-1)
+        set({
+          redoHistory: get().redoHistory.slice(0, -1),
+          history: [...get().history, get().pixels],
+          pixels: next,
         })
       },
     }),
