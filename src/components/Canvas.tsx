@@ -1,5 +1,5 @@
 import { styled } from '@linaria/react'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 import { useStore } from '../store'
 import { CanvasSideEffects } from './CanvasSideEffects'
@@ -19,8 +19,22 @@ export function Canvas() {
     }
   }, [stopDragging])
 
+  const contRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (contRef.current) {
+      const container = contRef.current
+      const preventDefault = (e: MouseEvent) => e.preventDefault()
+
+      container.addEventListener('contextmenu', preventDefault)
+      return () => {
+        container.addEventListener('contextmenu', preventDefault)
+      }
+    }
+  }, [])
+
   return (
-    <Container $width={pixelWidth}>
+    <Container $width={pixelWidth} ref={contRef}>
       {Array(pixelsLen)
         .fill(null)
         .map((_, i) => (
