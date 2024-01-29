@@ -6,6 +6,7 @@ export function useHotkeys() {
   const setColor = useStore(state => state.setColor)
   const setTool = useStore(state => state.setTool)
   const setTempEyeDropper = useStore(state => state.setTempEyeDropper)
+  const undo = useStore(state => state.undo)
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -17,6 +18,9 @@ export function useHotkeys() {
         case 'Digit4': setColor(3); break
         case 'KeyB': setTool('pencil'); break
         case 'KeyG': setTool('bucket'); break
+      }
+      if (e.code === 'KeyZ' && e.ctrlKey) {
+        undo()
       }
     }
     function handleKeyDown(e: KeyboardEvent) {
@@ -42,5 +46,5 @@ export function useHotkeys() {
       document.removeEventListener('keyup', handleKeyUp)
       window.removeEventListener('blur', resetTempEyeDropper)
     }
-  }, [setColor, setTool, setTempEyeDropper])
+  }, [setColor, setTool, setTempEyeDropper, undo])
 }

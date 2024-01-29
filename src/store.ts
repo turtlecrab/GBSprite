@@ -19,6 +19,7 @@ export interface State {
   tool: Tool
   dragging: boolean
   tempEyeDropper: boolean
+  history: number[][]
 
   setColor: (color: number) => void
   setPixel: (index: number) => void
@@ -26,9 +27,12 @@ export interface State {
   setTool: (tool: Tool) => void
   setTempEyeDropper: (value: boolean) => void
   startDragging: (index: number) => void
+  stopDragging: () => void
+  pushPixelsToHistory: () => void
   hoverCell: (index: number) => void
   clearPixels: () => void
   fill: (index: number) => void
+  undo: () => void
 }
 
 export const useStore = create<State>()(
@@ -44,6 +48,7 @@ export const useStore = create<State>()(
       tool: 'pencil',
       dragging: false,
       tempEyeDropper: false,
+      history: [],
 
       setColor: color => set({ color }),
       setPixel: index =>
@@ -53,7 +58,10 @@ export const useStore = create<State>()(
       setDragging: dragging => set({ dragging }),
       setTool: tool => set({ tool }),
       setTempEyeDropper: value => set({ tempEyeDropper: value }),
-      clearPixels: () => set(state => ({ pixels: state.pixels.map(_ => 0) })),
+      clearPixels: () => {
+        get().pushPixelsToHistory()
+        set(state => ({ pixels: state.pixels.map(_ => 0) }))
+      },
 
       startDragging: index => {
         if (get().tempEyeDropper) {
@@ -61,6 +69,8 @@ export const useStore = create<State>()(
           get().setTempEyeDropper(false)
           return
         }
+        get().pushPixelsToHistory()
+
         switch (get().tool) {
           case 'pencil':
             get().setPixel(index)
@@ -70,6 +80,12 @@ export const useStore = create<State>()(
             get().fill(index)
             break
         }
+      },
+      stopDragging: () => {
+        get().setDragging(false)
+      },
+      pushPixelsToHistory: () => {
+        set(state => ({ history: [...state.history, [...state.pixels]] }))
       },
       hoverCell: index => {
         if (!get().dragging) return
@@ -112,6 +128,15 @@ export const useStore = create<State>()(
           if (next % width < width - 1) stack.push(next + 1) // right
         }
         set({ pixels })
+      },
+      undo: () => {
+        if (get().history.length === 0) return
+
+        const prev = get().history.at(-1)
+        set({
+          history: get().history.slice(0, -1),
+          pixels: prev,
+        })
       },
     }),
     {

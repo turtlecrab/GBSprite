@@ -1,5 +1,5 @@
 import { styled } from '@linaria/react'
-import { LuPaintBucket, LuPencil } from 'react-icons/lu'
+import { LuPaintBucket, LuPencil, LuUndo2 } from 'react-icons/lu'
 
 import { Tool, useStore } from '../store'
 
@@ -11,6 +11,7 @@ const icons = {
 export function Tools() {
   const tool = useStore(state => state.tool)
   const setTool = useStore(state => state.setTool)
+  const undo = useStore(state => state.undo)
 
   return (
     <Container>
@@ -24,6 +25,9 @@ export function Tools() {
           <Icon tool={t as Tool} />
         </ToolButton>
       ))}
+      <ToolButton $selected={false} onClick={undo}>
+        <LuUndo2 size="100%" />
+      </ToolButton>
     </Container>
   )
 }

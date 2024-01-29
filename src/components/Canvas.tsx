@@ -8,19 +8,16 @@ import { Cell } from './Cell'
 export function Canvas() {
   const pixelWidth = useStore(state => state.spriteSize * state.width)
   const pixelsLen = useStore(state => state.pixels.length)
-  const setDragging = useStore(state => state.setDragging)
+  const stopDragging = useStore(state => state.stopDragging)
 
   useEffect(() => {
-    function stopDrag() {
-      setDragging(false)
-    }
-    window.addEventListener('mouseup', stopDrag)
-    window.addEventListener('blur', stopDrag)
+    window.addEventListener('mouseup', stopDragging)
+    window.addEventListener('blur', stopDragging)
     return () => {
-      window.removeEventListener('mouseup', stopDrag)
-      window.removeEventListener('blur', stopDrag)
+      window.removeEventListener('mouseup', stopDragging)
+      window.removeEventListener('blur', stopDragging)
     }
-  }, [setDragging])
+  }, [stopDragging])
 
   return (
     <Container $width={pixelWidth}>
