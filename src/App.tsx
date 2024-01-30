@@ -4,6 +4,7 @@ import { Canvas } from './components/Canvas'
 import { Debug } from './components/Debug'
 import { Export } from './components/Export'
 import { Palette } from './components/Palette'
+import { ToolBar } from './components/ToolBar'
 import { Tools } from './components/Tools'
 import { useHotkeys } from './hooks/useHotkeys'
 import { useStore } from './store'
@@ -15,12 +16,17 @@ export default function App() {
 
   return (
     <Main>
-      <Header>GBSprite</Header>
       <Top>
-        <Palette />
-        <Tools />
+        <Header>GBSprite</Header>
+        <ToolBar />
       </Top>
-      <Canvas />
+      <Group>
+        <Palette />
+        <CanvasWrapper>
+          <Canvas />
+        </CanvasWrapper>
+        <Tools />
+      </Group>
       <ClearButton onClick={clearPixels}>Clear</ClearButton>
       <Export />
       <Debug />
@@ -31,16 +37,29 @@ export default function App() {
 const Main = styled.main``
 
 const Header = styled.h1`
-  margin: 0 0 16px;
+  margin: 12px 0;
   padding: 0;
   color: #212529;
 `
 
 const Top = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: center;
   gap: 32px;
-  margin-bottom: 8px;
+  margin: 0 0 8px;
+`
+
+const CanvasWrapper = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
+const Group = styled.div`
+  display: flex;
+  gap: 8px;
 `
 
 const ClearButton = styled.button``

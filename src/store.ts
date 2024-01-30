@@ -21,6 +21,8 @@ export interface State {
   tempEyeDropper: boolean
   history: number[][]
   redoHistory: number[][]
+  zoom: number
+  zoomLevels: number[]
 
   setColor: (color: number) => void
   setPixel: (index: number) => void
@@ -35,6 +37,8 @@ export interface State {
   fill: (index: number) => void
   undo: () => void
   redo: () => void
+  zoomIn: () => void
+  zoomOut: () => void
 }
 
 export const useStore = create<State>()(
@@ -52,6 +56,8 @@ export const useStore = create<State>()(
       tempEyeDropper: false,
       history: [],
       redoHistory: [],
+      zoom: 32,
+      zoomLevels: [2, 4, 6, 8, 10, 12, 16, 24, 32, 48, 64, 96, 128],
 
       setColor: color => set({ color }),
       setPixel: index =>
@@ -155,6 +161,20 @@ export const useStore = create<State>()(
           history: [...get().history, get().pixels],
           pixels: next,
         })
+      },
+      zoomIn: () => {
+        if (get().zoom >= get().zoomLevels.at(-1)!) return
+
+        const nextZoom = get().zoomLevels.find(v => v > get().zoom)
+        set({ zoom: nextZoom })
+      },
+      zoomOut: () => {
+        if (get().zoom <= get().zoomLevels[0]) return
+
+        const nextZoom = [...get().zoomLevels]
+          .reverse()
+          .find(v => v < get().zoom)
+        set({ zoom: nextZoom })
       },
     }),
     {

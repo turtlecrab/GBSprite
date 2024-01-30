@@ -17,6 +17,7 @@ export function CanvasSideEffects() {
   const tempEyeDropper = useStore(state => state.tempEyeDropper)
   const color = useStore(state => state.color)
   const palette = useStore(state => state.palette)
+  const zoom = useStore(state => state.zoom)
 
   // cell cursor style
   useEffect(() => {
@@ -39,6 +40,14 @@ export function CanvasSideEffects() {
       document.body.style.removeProperty('--cell-hover-color')
     }
   }, [tempEyeDropper, tool, color, palette])
+
+  // pixel scale
+  useEffect(() => {
+    document.body.style.setProperty('--pixel-size', zoom + 'px')
+    return () => {
+      document.body.style.removeProperty('--pixel-size')
+    }
+  }, [zoom])
 
   return null
 }
