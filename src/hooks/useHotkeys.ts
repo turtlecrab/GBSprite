@@ -47,12 +47,12 @@ export function useHotkeys() {
     function resetTempEyeDropper() {
       setTempEyeDropper(false)
     }
-    document.addEventListener('keypress', handleKey)
+    document.addEventListener('keydown', handleKey)
     document.addEventListener('keydown', handleKeyDown)
     document.addEventListener('keyup', handleKeyUp)
     window.addEventListener('blur', resetTempEyeDropper)
     return () => {
-      document.removeEventListener('keypress', handleKey)
+      document.removeEventListener('keydown', handleKey)
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('keyup', handleKeyUp)
       window.removeEventListener('blur', resetTempEyeDropper)
