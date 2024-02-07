@@ -5,6 +5,7 @@ import { Debug } from './components/Debug'
 import { Export } from './components/Export'
 import { Palette } from './components/Palette'
 import { Preview } from './components/Preview'
+import { Settings } from './components/Settings'
 import { ToolBar } from './components/ToolBar'
 import { Tools } from './components/Tools'
 import { useHotkeys } from './hooks/useHotkeys'
@@ -30,6 +31,7 @@ export default function App() {
       </Group>
       <ClearButton onClick={clearPixels}>Clear</ClearButton>
       <Export />
+      <Settings />
       <Preview />
       <Debug />
     </Main>

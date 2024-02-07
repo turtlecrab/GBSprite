@@ -39,6 +39,7 @@ export interface State {
   redo: () => void
   zoomIn: () => void
   zoomOut: () => void
+  setSize: (w: number, h: number) => void
 }
 
 export const useStore = create<State>()(
@@ -175,6 +176,56 @@ export const useStore = create<State>()(
           .reverse()
           .find(v => v < get().zoom)
         set({ zoom: nextZoom })
+      },
+      setSize: (newWidth, newHeight) => {
+        // TODO: refactor
+        if (newWidth === get().width && newHeight === get().height) return
+
+        let newPixels: number[] = []
+        const minPixelHeight =
+          Math.min(get().height, newHeight) * get().spriteSize
+
+        if (newWidth < get().width) {
+          // crop right
+          for (let i = 0; i < minPixelHeight; i++) {
+            newPixels.push(
+              ...get().pixels.slice(
+                get().width * get().spriteSize * i,
+                get().width * get().spriteSize * i +
+                  newWidth * get().spriteSize,
+              ),
+            )
+          }
+        } else if (newWidth >= get().width) {
+          // add pixels on the right
+          for (let i = 0; i < minPixelHeight; i++) {
+            newPixels.push(
+              ...get().pixels.slice(
+                get().width * get().spriteSize * i,
+                get().width * get().spriteSize * (i + 1),
+              ),
+              ...Array((newWidth - get().width) * get().spriteSize).fill(0),
+            )
+          }
+        }
+        if (newHeight > get().height) {
+          // add pixels at the bottom
+          newPixels.push(
+            ...Array(
+              (newHeight - get().height) *
+                newWidth *
+                get().spriteSize *
+                get().spriteSize,
+            ).fill(0),
+          )
+        }
+        set({
+          pixels: newPixels,
+          width: newWidth,
+          height: newHeight,
+          history: [], // TODO
+          redoHistory: [],
+        })
       },
     }),
     {
