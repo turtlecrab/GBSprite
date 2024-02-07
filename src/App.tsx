@@ -1,20 +1,14 @@
 import { styled } from '@linaria/react'
 
 import { Canvas } from './components/Canvas'
-import { Debug } from './components/Debug'
-import { Export } from './components/Export'
 import { Palette } from './components/Palette'
-import { Preview } from './components/Preview'
-import { Settings } from './components/Settings'
+import { Tabs } from './components/Tabs'
 import { ToolBar } from './components/ToolBar'
 import { Tools } from './components/Tools'
 import { useHotkeys } from './hooks/useHotkeys'
-import { useStore } from './store'
 
 export default function App() {
   useHotkeys()
-
-  const clearPixels = useStore(state => state.clearPixels)
 
   return (
     <Main>
@@ -29,16 +23,16 @@ export default function App() {
         </CanvasWrapper>
         <Tools />
       </Group>
-      <ClearButton onClick={clearPixels}>Clear</ClearButton>
-      <Export />
-      <Settings />
-      <Preview />
-      <Debug />
+      <Tabs />
     </Main>
   )
 }
 
-const Main = styled.main``
+const Main = styled.main`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
 
 const Header = styled.h1`
   margin: 12px 0;
@@ -65,5 +59,3 @@ const Group = styled.div`
   display: flex;
   gap: 8px;
 `
-
-const ClearButton = styled.button``
