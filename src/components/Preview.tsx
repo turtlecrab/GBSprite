@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 import { useEffect, useRef, useState } from 'react'
 
 import { useStore } from '../store'
+import { Checkbox } from './Checkbox'
 
 export function Preview() {
   const pixels = useStore(state => state.pixels)
@@ -79,22 +80,12 @@ export function Preview() {
             {n}x
           </button>
         ))}
-        <label>
-          <input
-            type="checkbox"
-            checked={isPixelPerfect}
-            onChange={e => setIsPixelPerfect(e.currentTarget.checked)}
-          />{' '}
+        <Checkbox value={isPixelPerfect} setValue={setIsPixelPerfect}>
           Pixel-perfect
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={isTiled}
-            onChange={e => setIsTiled(e.currentTarget.checked)}
-          />{' '}
+        </Checkbox>
+        <Checkbox value={isTiled} setValue={setIsTiled}>
           Tiled
-        </label>
+        </Checkbox>
       </Controls>
       <CanvasWrapper
         $width={pixelWidth * zoomFactor}
@@ -117,27 +108,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 90vw;
-  overflow: auto;
 `
 
 const Controls = styled.div`
   display: flex;
   gap: 4px;
 
-  button {
+  & > button {
     padding: 2px 8px;
-  }
-
-  label {
-    display: flex;
-    align-items: center;
-    margin-left: 8px;
-
-    input[type='checkbox'] {
-      width: 1rem;
-      height: 1rem;
-    }
   }
 `
 
@@ -151,6 +129,8 @@ const CanvasWrapper = styled.div<{
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  max-width: 90vw;
+  overflow: auto;
 
   canvas {
     image-rendering: pixelated;
