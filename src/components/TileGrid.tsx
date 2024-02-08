@@ -1,13 +1,37 @@
 import { styled } from '@linaria/react'
+import { useEffect, useRef } from 'react'
 
 import { useStore } from '../store'
+
+const EDGE_WIDTH = '2px'
+const EDGE_COLOR = 'blue'
 
 export function TileGrid() {
   const width = useStore(state => state.width)
   const height = useStore(state => state.height)
 
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!containerRef.current) return
+
+    const container = containerRef.current
+
+    function setDevicePixel() {
+      container.style.setProperty(
+        '--device-pixel',
+        String(window.devicePixelRatio),
+      )
+    }
+    setDevicePixel()
+    window.addEventListener('resize', setDevicePixel)
+    return () => {
+      window.removeEventListener('resize', setDevicePixel)
+    }
+  }, [])
+
   return (
-    <Container>
+    <Container ref={containerRef}>
       <Cols>
         {Array(width - 1)
           .fill(null)
@@ -38,8 +62,8 @@ const Cols = styled.div`
 `
 
 const Col = styled.div`
-  width: 2px;
-  background-color: blue;
+  width: calc(${EDGE_WIDTH} / var(--device-pixel));
+  background-color: ${EDGE_COLOR};
 `
 
 const Rows = styled.div`
@@ -51,6 +75,6 @@ const Rows = styled.div`
 `
 
 const Row = styled.div`
-  height: 2px;
-  background-color: blue;
+  height: calc(${EDGE_WIDTH} / var(--device-pixel));
+  background-color: ${EDGE_COLOR};
 `
