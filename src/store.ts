@@ -23,6 +23,8 @@ export interface State {
   redoHistory: number[][]
   zoom: number
   zoomLevels: number[]
+  previewZoom: number
+  previewZoomLevels: number[]
 
   setColor: (color: number) => void
   setPixel: (index: number) => void
@@ -40,6 +42,7 @@ export interface State {
   zoomIn: () => void
   zoomOut: () => void
   setSize: (w: number, h: number) => void
+  setPreviewZoom: (zoom: number) => void
 }
 
 export const useStore = create<State>()(
@@ -59,6 +62,8 @@ export const useStore = create<State>()(
       redoHistory: [],
       zoom: 32,
       zoomLevels: [2, 4, 6, 8, 10, 12, 16, 24, 32, 48, 64, 96, 128],
+      previewZoom: 2,
+      previewZoomLevels: [2, 4, 8, 16],
 
       setColor: color => set({ color }),
       setPixel: index =>
@@ -177,6 +182,7 @@ export const useStore = create<State>()(
           .find(v => v < get().zoom)
         set({ zoom: nextZoom })
       },
+      setPreviewZoom: zoom => set({ previewZoom: zoom }),
       setSize: (newWidth, newHeight) => {
         // TODO: refactor
         if (newWidth === get().width && newHeight === get().height) return
@@ -236,6 +242,7 @@ export const useStore = create<State>()(
         height: state.height,
         pixels: state.pixels,
         color: state.color,
+        zoom: state.zoom,
       }),
     },
   ),

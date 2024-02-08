@@ -48,11 +48,14 @@ export function Preview() {
     }
   }, [ctx, pixels, pixelWidth, pixelHeight, palette, isTiled])
 
-  const [zoomFactor, setZoomFactor] = useState(2)
+  const previewZoom = useStore(state => state.previewZoom)
+  const setPreviewZoom = useStore(state => state.setPreviewZoom)
+  const previewZoomLevels = useStore(state => state.previewZoomLevels)
+
   const [isPixelPerfect, setIsPixelPerfect] = useState(true)
   const [ratio, setRatio] = useState(window.devicePixelRatio)
 
-  const previewZoom = zoomFactor * (isPixelPerfect ? 1 / ratio : 1)
+  const zoomFactor = previewZoom * (isPixelPerfect ? 1 / ratio : 1)
 
   useEffect(() => {
     function cb() {
@@ -67,11 +70,11 @@ export function Preview() {
   return (
     <Container>
       <Controls>
-        {[2, 4, 8, 16].map(n => (
+        {previewZoomLevels.map(n => (
           <button
-            onClick={() => setZoomFactor(n)}
+            onClick={() => setPreviewZoom(n)}
             key={n}
-            style={n === zoomFactor ? { fontWeight: 'bold' } : {}}
+            style={n === previewZoom ? { fontWeight: 'bold' } : {}}
           >
             {n}x
           </button>
@@ -94,8 +97,8 @@ export function Preview() {
         </label>
       </Controls>
       <CanvasWrapper
-        $width={pixelWidth * previewZoom}
-        $height={pixelHeight * previewZoom}
+        $width={pixelWidth * zoomFactor}
+        $height={pixelHeight * zoomFactor}
         $bg={palette[0]}
       >
         <canvas
