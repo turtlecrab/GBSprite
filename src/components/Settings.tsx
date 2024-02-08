@@ -25,6 +25,7 @@ export function Settings() {
 
   const gridVisible = useStore(state => state.gridVisible)
   const setGridVisible = useStore(state => state.setGridVisible)
+  const clearPixels = useStore(state => state.clearPixels)
 
   return (
     <Container>
@@ -53,6 +54,7 @@ export function Settings() {
         </button>
       </Group>
       (resizing will flush undo/redo history, TODO)
+      <button onClick={clearPixels}>Clear canvas</button>
     </Container>
   )
 }
