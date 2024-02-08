@@ -25,6 +25,7 @@ export interface State {
   zoomLevels: number[]
   previewZoom: number
   previewZoomLevels: number[]
+  gridVisible: boolean
 
   setColor: (color: number) => void
   setPixel: (index: number) => void
@@ -43,6 +44,8 @@ export interface State {
   zoomOut: () => void
   setSize: (w: number, h: number) => void
   setPreviewZoom: (zoom: number) => void
+  setGridVisible: (gridVisible: boolean) => void
+  toggleGridVisible: () => void
 }
 
 export const useStore = create<State>()(
@@ -64,6 +67,7 @@ export const useStore = create<State>()(
       zoomLevels: [2, 4, 6, 8, 10, 12, 16, 24, 32, 48, 64, 96, 128],
       previewZoom: 2,
       previewZoomLevels: [2, 4, 8, 16],
+      gridVisible: false,
 
       setColor: color => set({ color }),
       setPixel: index =>
@@ -233,6 +237,8 @@ export const useStore = create<State>()(
           redoHistory: [],
         })
       },
+      setGridVisible: gridVisible => set({ gridVisible }),
+      toggleGridVisible: () => set({ gridVisible: !get().gridVisible }),
     }),
     {
       name: 'GBSprite',

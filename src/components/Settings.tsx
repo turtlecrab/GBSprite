@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 import { useState } from 'react'
 
 import { useStore } from '../store'
+import { Checkbox } from './Checkbox'
 import { NumberInput } from './NumberInput'
 
 export function Settings() {
@@ -22,9 +23,15 @@ export function Settings() {
     setRows(height)
   }
 
+  const gridVisible = useStore(state => state.gridVisible)
+  const setGridVisible = useStore(state => state.setGridVisible)
+
   return (
     <Container>
       <h2>Settings</h2>
+      <Checkbox value={gridVisible} setValue={setGridVisible}>
+        Show tile grid
+      </Checkbox>
       <Group>
         <NumberInput min={1} max={20} value={cols} setValue={setCols} /> Columns
       </Group>

@@ -10,6 +10,7 @@ export function useHotkeys() {
   const redo = useStore(state => state.redo)
   const zoomIn = useStore(state => state.zoomIn)
   const zoomOut = useStore(state => state.zoomOut)
+  const toggleGridVisible = useStore(state => state.toggleGridVisible)
 
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
@@ -33,7 +34,11 @@ export function useHotkeys() {
       ) {
         redo()
       }
+      if (e.code === 'Quote' && e.ctrlKey) {
+        toggleGridVisible()
+      }
     }
+
     function handleKeyDown(e: KeyboardEvent) {
       if (!e.repeat && (e.altKey || e.ctrlKey)) {
         setTempEyeDropper(true)
@@ -47,15 +52,26 @@ export function useHotkeys() {
     function resetTempEyeDropper() {
       setTempEyeDropper(false)
     }
+
     document.addEventListener('keydown', handleKey)
     document.addEventListener('keydown', handleKeyDown)
     document.addEventListener('keyup', handleKeyUp)
     window.addEventListener('blur', resetTempEyeDropper)
+
     return () => {
       document.removeEventListener('keydown', handleKey)
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('keyup', handleKeyUp)
       window.removeEventListener('blur', resetTempEyeDropper)
     }
-  }, [setColor, setTool, setTempEyeDropper, undo, redo, zoomIn, zoomOut])
+  }, [
+    setColor,
+    setTool,
+    setTempEyeDropper,
+    undo,
+    redo,
+    zoomIn,
+    zoomOut,
+    toggleGridVisible,
+  ])
 }
