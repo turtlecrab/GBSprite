@@ -1,6 +1,7 @@
 import { styled } from '@linaria/react'
 import { useEffect, useRef, useState } from 'react'
 
+import { getPixelCoords } from '../lib/utils'
 import { useStore } from '../store'
 import { CanvasSideEffects } from './CanvasSideEffects'
 import { TileGrid } from './TileGrid'
@@ -149,13 +150,6 @@ function getPointerPixelCoords(e: React.PointerEvent, w: number, h: number) {
   const y = Math.max(0, Math.floor(((e.clientY - rect.top) / rect.height) * h))
 
   return { x, y }
-}
-
-function getPixelCoords(index: number, w: number) {
-  return {
-    x: index % w,
-    y: (index - (index % w)) / w,
-  }
 }
 
 const Container = styled.div`

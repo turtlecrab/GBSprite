@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
+import { getLine } from './lib/utils'
+
 export type Tool = 'pencil' | 'bucket'
 
 const DEFAULT_SPRITE_SIZE = 8
@@ -123,7 +125,14 @@ export const useStore = create<State>()(
           case 'pencil':
             if (!get().dragging) break
             set({
-              draft: [...get().draft, [get().lastHoveredPixel ?? index, index]],
+              draft: [
+                ...get().draft,
+                getLine(
+                  get().lastHoveredPixel,
+                  index,
+                  get().width * get().spriteSize,
+                ),
+              ],
             })
             break
         }
