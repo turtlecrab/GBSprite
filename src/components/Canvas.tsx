@@ -12,14 +12,21 @@ export function Canvas() {
   const spriteSize = useStore(state => state.spriteSize)
   const palette = useStore(state => state.palette)
   const gridVisible = useStore(state => state.gridVisible)
+  const color = useStore(state => state.color)
+  const lastHoveredPixel = useStore(state => state.lastHoveredPixel)
+  const tempEyeDropper = useStore(state => state.tempEyeDropper)
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
   const hoverPixel = useStore(state => state.hoverPixel)
   const clearLastHoveredPixel = useStore(state => state.clearLastHoveredPixel)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const draftRef = useRef<HTMLCanvasElement>(null)
 
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null)
+  const [draftCtx, setDraftCtx] = useState<CanvasRenderingContext2D | null>(
+    null,
+  )
 
   const pixelWidth = spriteSize * tileWidth
   const pixelHeight = spriteSize * tileHeight
@@ -27,6 +34,11 @@ export function Canvas() {
   useEffect(() => {
     if (!canvasRef.current) return
     setCtx(canvasRef.current.getContext('2d')!)
+  }, [])
+
+  useEffect(() => {
+    if (!draftRef.current) return
+    setDraftCtx(draftRef.current.getContext('2d')!)
   }, [])
 
   const bytesRef = useRef<Uint8ClampedArray | null>(null)
@@ -64,6 +76,26 @@ export function Canvas() {
     ctx.putImageData(dataRef.current, 0, 0)
   }, [ctx, palette, pixelHeight, pixelWidth, pixels])
 
+  useEffect(() => {
+    if (!draftCtx) return
+
+    draftCtx.clearRect(0, 0, pixelWidth, pixelHeight)
+
+    if (lastHoveredPixel !== null && !tempEyeDropper) {
+      draftCtx.fillStyle = palette[color]
+      const { x, y } = getPixelCoords(lastHoveredPixel, pixelWidth)
+      draftCtx.fillRect(x, y, 1, 1)
+    }
+  }, [
+    draftCtx,
+    pixelWidth,
+    pixelHeight,
+    palette,
+    color,
+    lastHoveredPixel,
+    tempEyeDropper,
+  ])
+
   function pointerDown(e: React.PointerEvent) {
     e.preventDefault()
     const { x, y } = getPointerPixelCoords(e, pixelWidth, pixelHeight)
@@ -86,7 +118,7 @@ export function Canvas() {
 
   return (
     <Container>
-      <CanvasElement
+      <MainCanvas
         width={pixelWidth}
         height={pixelHeight}
         ref={canvasRef}
@@ -94,6 +126,7 @@ export function Canvas() {
         onPointerDown={pointerDown}
         onPointerLeave={clearLastHoveredPixel}
       />
+      <DraftCanvas width={pixelWidth} height={pixelHeight} ref={draftRef} />
       {gridVisible && <TileGrid />}
       <CanvasSideEffects />
     </Container>
@@ -110,16 +143,32 @@ function getPointerPixelCoords(e: React.PointerEvent, w: number, h: number) {
   return { x, y }
 }
 
+function getPixelCoords(index: number, w: number) {
+  return {
+    x: index % w,
+    y: (index - (index % w)) / w,
+  }
+}
+
 const Container = styled.div`
   position: relative;
   display: flex;
   border: 1px solid lightgray;
 `
 
-const CanvasElement = styled.canvas<{ width: number; height: number }>`
+const MainCanvas = styled.canvas<{ width: number; height: number }>`
   image-rendering: pixelated;
   width: calc(${p => p.width} * var(--pixel-size));
   height: calc(${p => p.height} * var(--pixel-size));
 
   cursor: var(--cell-cursor);
+`
+
+const DraftCanvas = styled.canvas<{ width: number; height: number }>`
+  image-rendering: pixelated;
+  width: calc(${p => p.width} * var(--pixel-size));
+  height: calc(${p => p.height} * var(--pixel-size));
+
+  position: absolute;
+  pointer-events: none;
 `
