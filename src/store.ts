@@ -41,10 +41,10 @@ export interface State {
   setTool: (tool: Tool) => void
   setTempEyeDropper: (value: boolean) => void
   startDragging: (index: number) => void
+  hoverPixel: (index: number) => void
   stopDragging: () => void
   commitDraft: () => void
   pushPixelsToHistory: () => void
-  hoverPixel: (index: number) => void
   clearLastHoveredPixel: () => void
   clearPixels: () => void
   fill: (index: number) => void
@@ -116,7 +116,19 @@ export const useStore = create<State>()(
             break
         }
       },
+      hoverPixel: index => {
+        if (index === get().lastHoveredPixel) return
 
+        switch (get().tool) {
+          case 'pencil':
+            if (!get().dragging) break
+            set({
+              draft: [...get().draft, [get().lastHoveredPixel ?? index, index]],
+            })
+            break
+        }
+        set({ lastHoveredPixel: index })
+      },
       stopDragging: () => {
         if (!get().dragging) return
         get().setDragging(false)
@@ -148,19 +160,6 @@ export const useStore = create<State>()(
           ],
           redoHistory: [],
         }))
-      },
-      hoverPixel: index => {
-        if (index === get().lastHoveredPixel) return
-
-        switch (get().tool) {
-          case 'pencil':
-            if (!get().dragging) break
-            set({
-              draft: [...get().draft, [get().lastHoveredPixel ?? index, index]],
-            })
-            break
-        }
-        set({ lastHoveredPixel: index })
       },
       clearLastHoveredPixel: () => set({ lastHoveredPixel: null }),
       fill: index => {
