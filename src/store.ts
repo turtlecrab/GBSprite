@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { getLine } from './lib/utils'
+import { arePixelsAdjacent, getLine } from './lib/utils'
 
 export type Tool = 'pencil' | 'bucket'
 
@@ -122,19 +122,48 @@ export const useStore = create<State>()(
         if (index === get().lastHoveredPixel) return
 
         switch (get().tool) {
-          case 'pencil':
+          case 'pencil': {
             if (!get().dragging) break
-            set({
-              draft: [
-                ...get().draft,
-                getLine(
-                  get().lastHoveredPixel,
-                  index,
-                  get().width * get().spriteSize,
-                ),
-              ],
-            })
+
+            // pixel-perfect pencil
+            // TODO: refactor this mess
+            const width = get().width * get().spriteSize
+            const newLine = getLine(get().lastHoveredPixel, index, width)
+            const prevLine = get().draft.at(-1)!
+
+            if (prevLine.length < 2) throw new Error('bad segment')
+
+            // check for ─ │ └ ┘ ┌ ┐
+            if (
+              prevLine.at(-1)! === newLine[0] &&
+              arePixelsAdjacent(prevLine.at(-1)!, prevLine.at(-2)!, width) &&
+              arePixelsAdjacent(newLine[0], newLine[1], width)
+            ) {
+              // shorten newLine,
+              newLine.shift()
+
+              // ensure newLine.length >= 2)
+              if (newLine.length === 1) {
+                newLine.push(newLine[0])
+              }
+              // shorten prevLine
+              prevLine.pop() // mutating state bad, TODO
+
+              // fill the gap (needed for ─ │ )
+              set({
+                draft: [
+                  ...get().draft,
+                  getLine(prevLine.at(-1)!, newLine[0], width),
+                  newLine,
+                ],
+              })
+            } else {
+              set({
+                draft: [...get().draft, newLine],
+              })
+            }
             break
+          }
         }
         set({ lastHoveredPixel: index })
       },
