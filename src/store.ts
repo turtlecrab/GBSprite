@@ -33,6 +33,7 @@ export interface State {
   previewZoom: number
   previewZoomLevels: number[]
   gridVisible: boolean
+  draft: number[][]
 
   setColor: (color: number) => void
   setPixel: (index: number) => void
@@ -41,6 +42,7 @@ export interface State {
   setTempEyeDropper: (value: boolean) => void
   startDragging: (index: number) => void
   stopDragging: () => void
+  commitDraft: () => void
   pushPixelsToHistory: () => void
   hoverPixel: (index: number) => void
   clearLastHoveredPixel: () => void
@@ -77,6 +79,7 @@ export const useStore = create<State>()(
       previewZoom: 2,
       previewZoomLevels: [2, 4, 8, 16],
       gridVisible: false,
+      draft: [],
 
       setColor: color => set({ color }),
       setPixel: index =>
@@ -97,21 +100,41 @@ export const useStore = create<State>()(
           get().setTempEyeDropper(false)
           return
         }
-        get().pushPixelsToHistory()
 
         switch (get().tool) {
           case 'pencil':
-            get().setPixel(index)
             get().setDragging(true)
+
+            if (get().draft.length > 0) {
+              get().commitDraft()
+            }
+            set({ draft: [[index, index]] })
             break
           case 'bucket':
+            get().pushPixelsToHistory()
             get().fill(index)
             break
         }
       },
+
       stopDragging: () => {
         if (!get().dragging) return
         get().setDragging(false)
+
+        get().commitDraft()
+      },
+      commitDraft: () => {
+        if (get().draft.length === 0) return
+
+        get().pushPixelsToHistory()
+        const draftSet = new Set(get().draft.flat())
+        const color = get().color
+        set({
+          draft: [],
+          pixels: get().pixels.map((pixel, i) =>
+            draftSet.has(i) ? color : pixel,
+          ),
+        })
       },
       pushPixelsToHistory: () => {
         set(state => ({
@@ -128,14 +151,16 @@ export const useStore = create<State>()(
       },
       hoverPixel: index => {
         if (index === get().lastHoveredPixel) return
-        set({ lastHoveredPixel: index })
 
-        if (!get().dragging) return
         switch (get().tool) {
           case 'pencil':
-            get().setPixel(index)
+            if (!get().dragging) break
+            set({
+              draft: [...get().draft, [get().lastHoveredPixel ?? index, index]],
+            })
             break
         }
+        set({ lastHoveredPixel: index })
       },
       clearLastHoveredPixel: () => set({ lastHoveredPixel: null }),
       fill: index => {

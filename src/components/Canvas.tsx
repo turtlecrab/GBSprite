@@ -15,6 +15,7 @@ export function Canvas() {
   const color = useStore(state => state.color)
   const lastHoveredPixel = useStore(state => state.lastHoveredPixel)
   const tempEyeDropper = useStore(state => state.tempEyeDropper)
+  const draft = useStore(state => state.draft)
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
   const hoverPixel = useStore(state => state.hoverPixel)
@@ -81,8 +82,14 @@ export function Canvas() {
 
     draftCtx.clearRect(0, 0, pixelWidth, pixelHeight)
 
+    draftCtx.fillStyle = palette[color]
+
+    new Set(draft.flat()).forEach(p => {
+      const { x, y } = getPixelCoords(p, pixelWidth)
+      draftCtx.fillRect(x, y, 1, 1)
+    })
+
     if (lastHoveredPixel !== null && !tempEyeDropper) {
-      draftCtx.fillStyle = palette[color]
       const { x, y } = getPixelCoords(lastHoveredPixel, pixelWidth)
       draftCtx.fillRect(x, y, 1, 1)
     }
@@ -94,6 +101,7 @@ export function Canvas() {
     color,
     lastHoveredPixel,
     tempEyeDropper,
+    draft,
   ])
 
   function pointerDown(e: React.PointerEvent) {
