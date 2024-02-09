@@ -9,6 +9,12 @@ const DEFAULT_HEIGHT = 1
 const DEFAULT_PIXELS_SIZE =
   DEFAULT_SPRITE_SIZE * DEFAULT_SPRITE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
+interface UndoSnapshot {
+  pixels: number[]
+  width: number
+  height: number
+}
+
 export interface State {
   palette: string[]
   spriteSize: number
@@ -20,8 +26,8 @@ export interface State {
   dragging: boolean
   lastHoveredPixel: number | null
   tempEyeDropper: boolean
-  history: number[][]
-  redoHistory: number[][]
+  history: UndoSnapshot[]
+  redoHistory: UndoSnapshot[]
   zoom: number
   zoomLevels: number[]
   previewZoom: number
@@ -109,7 +115,14 @@ export const useStore = create<State>()(
       },
       pushPixelsToHistory: () => {
         set(state => ({
-          history: [...state.history, [...state.pixels]],
+          history: [
+            ...state.history,
+            {
+              pixels: [...state.pixels],
+              width: state.width,
+              height: state.height,
+            },
+          ],
           redoHistory: [],
         }))
       },
@@ -162,21 +175,31 @@ export const useStore = create<State>()(
       undo: () => {
         if (get().history.length === 0) return
 
-        const prev = get().history.at(-1)
+        const prev = get().history.at(-1)!
         set({
           history: get().history.slice(0, -1),
-          redoHistory: [...get().redoHistory, get().pixels],
-          pixels: prev,
+          redoHistory: [
+            ...get().redoHistory,
+            { pixels: get().pixels, width: get().width, height: get().height },
+          ],
+          pixels: prev.pixels,
+          width: prev.width,
+          height: prev.height,
         })
       },
       redo: () => {
         if (get().redoHistory.length === 0) return
 
-        const next = get().redoHistory.at(-1)
+        const next = get().redoHistory.at(-1)!
         set({
           redoHistory: get().redoHistory.slice(0, -1),
-          history: [...get().history, get().pixels],
-          pixels: next,
+          history: [
+            ...get().history,
+            { pixels: get().pixels, width: get().width, height: get().height },
+          ],
+          pixels: next.pixels,
+          width: next.width,
+          height: next.height,
         })
       },
       zoomIn: () => {
@@ -240,7 +263,14 @@ export const useStore = create<State>()(
           pixels: newPixels,
           width: newWidth,
           height: newHeight,
-          history: [], // TODO
+          history: [
+            ...get().history,
+            {
+              pixels: get().pixels,
+              width: get().width,
+              height: get().height,
+            },
+          ],
           redoHistory: [],
         })
       },
