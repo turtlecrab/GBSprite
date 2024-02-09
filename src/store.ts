@@ -18,6 +18,7 @@ export interface State {
   color: number
   tool: Tool
   dragging: boolean
+  lastHoveredPixel: number | null
   tempEyeDropper: boolean
   history: number[][]
   redoHistory: number[][]
@@ -35,7 +36,8 @@ export interface State {
   startDragging: (index: number) => void
   stopDragging: () => void
   pushPixelsToHistory: () => void
-  hoverCell: (index: number) => void
+  hoverPixel: (index: number) => void
+  clearLastHoveredPixel: () => void
   clearPixels: () => void
   fill: (index: number) => void
   undo: () => void
@@ -60,6 +62,7 @@ export const useStore = create<State>()(
       color: 3,
       tool: 'pencil',
       dragging: false,
+      lastHoveredPixel: null,
       tempEyeDropper: false,
       history: [],
       redoHistory: [],
@@ -110,7 +113,10 @@ export const useStore = create<State>()(
           redoHistory: [],
         }))
       },
-      hoverCell: index => {
+      hoverPixel: index => {
+        if (index === get().lastHoveredPixel) return
+        set({ lastHoveredPixel: index })
+
         if (!get().dragging) return
         switch (get().tool) {
           case 'pencil':
@@ -118,6 +124,7 @@ export const useStore = create<State>()(
             break
         }
       },
+      clearLastHoveredPixel: () => set({ lastHoveredPixel: null }),
       fill: index => {
         const pixels = [...get().pixels]
         const width = get().width * DEFAULT_SPRITE_SIZE

@@ -6,11 +6,11 @@ interface Props {
   index: number
 }
 
-export function Cell({ index }: Props) {
+export function Pixel({ index }: Props) {
   const palette = useStore(state => state.palette)
   const color = useStore(state => state.pixels[index])
   const startDragging = useStore(state => state.startDragging)
-  const hoverCell = useStore(state => state.hoverCell)
+  const hoverPixel = useStore(state => state.hoverPixel)
 
   function mouseDown(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
@@ -19,11 +19,11 @@ export function Cell({ index }: Props) {
 
   function mouseOver(e: React.MouseEvent<HTMLDivElement>) {
     e.preventDefault()
-    hoverCell(index)
+    hoverPixel(index)
   }
 
   return (
-    <CellView
+    <PixelView
       $color={palette[color]}
       onMouseDown={mouseDown}
       onMouseOver={mouseOver}
@@ -31,7 +31,7 @@ export function Cell({ index }: Props) {
   )
 }
 
-const CellView = styled.div<{ $color: string }>`
+const PixelView = styled.div<{ $color: string }>`
   aspect-ratio: 1;
   background-color: ${p => p.$color};
   box-sizing: content-box;
