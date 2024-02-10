@@ -112,8 +112,32 @@ export function arePixelsAdjacent(
 ): boolean {
   const { x: x1, y: y1 } = getPixelCoords(index1, width)
   const { x: x2, y: y2 } = getPixelCoords(index2, width)
-  const result =
+  return (
     (Math.abs(x1 - x2) === 1 && y1 === y2) ||
     (Math.abs(y1 - y2) === 1 && x1 === x2)
-  return result
+  )
+}
+
+export function arePixelsAtRightAngle(
+  index1: number,
+  index2: number,
+  index3: number,
+  width: number,
+): boolean {
+  const { x: x1, y: y1 } = getPixelCoords(index1, width)
+  const { x: x2, y: y2 } = getPixelCoords(index2, width)
+  const { x: x3, y: y3 } = getPixelCoords(index3, width)
+
+  return (
+    // 1-2 horizontal, 2-3 vertical
+    (y1 === y2 &&
+      Math.abs(x1 - x2) === 1 &&
+      x2 === x3 &&
+      Math.abs(y2 - y3) === 1) ||
+    // 1-2 vertical, 2-3 horizontal
+    (x1 === x2 &&
+      Math.abs(y1 - y2) === 1 &&
+      y2 === y3 &&
+      Math.abs(x2 - x3) === 1)
+  )
 }

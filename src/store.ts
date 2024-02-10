@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { arePixelsAdjacent, getLine } from './lib/utils'
+import { arePixelsAtRightAngle, getLine } from './lib/utils'
 
 export type Tool = 'pencil' | 'bucket'
 
@@ -133,35 +133,30 @@ export const useStore = create<State>()(
 
             if (prevLine.length < 2) throw new Error('bad segment')
 
-            // check for ─ │ └ ┘ ┌ ┐
+            // check for └ ┘ ┌ ┐
             if (
               prevLine.at(-1)! === newLine[0] &&
-              arePixelsAdjacent(prevLine.at(-1)!, prevLine.at(-2)!, width) &&
-              arePixelsAdjacent(newLine[0], newLine[1], width)
+              arePixelsAtRightAngle(
+                prevLine.at(-2)!,
+                newLine[0],
+                newLine[1],
+                width,
+              )
             ) {
               // shorten newLine,
               newLine.shift()
+
+              // shorten prevLine
+              prevLine.pop() // mutating state kinda bad, TODO
 
               // ensure newLine.length >= 2)
               if (newLine.length === 1) {
                 newLine.push(newLine[0])
               }
-              // shorten prevLine
-              prevLine.pop() // mutating state bad, TODO
-
-              // fill the gap (needed for ─ │ )
-              set({
-                draft: [
-                  ...get().draft,
-                  getLine(prevLine.at(-1)!, newLine[0], width),
-                  newLine,
-                ],
-              })
-            } else {
-              set({
-                draft: [...get().draft, newLine],
-              })
             }
+            set({
+              draft: [...get().draft, newLine],
+            })
             break
           }
         }
