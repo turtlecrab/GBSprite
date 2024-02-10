@@ -6,6 +6,16 @@ export function Palette() {
   const palette = useStore(state => state.palette)
   const color = useStore(state => state.color)
   const setColor = useStore(state => state.setColor)
+  const fillCanvas = useStore(state => state.fillCanvas)
+
+  function handleButtonClick(e: React.MouseEvent, i: number) {
+    if (e.ctrlKey) {
+      fillCanvas(i)
+      e.preventDefault()
+    } else {
+      setColor(i)
+    }
+  }
 
   return (
     <Container>
@@ -13,7 +23,7 @@ export function Palette() {
         <ColorButton
           $color={c}
           $selected={color === i}
-          onClick={() => setColor(i)}
+          onClick={e => handleButtonClick(e, i)}
           aria-label={'Color #' + i}
           key={i}
         />

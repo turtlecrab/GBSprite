@@ -48,7 +48,7 @@ export interface State {
   commitDraft: () => void
   pushPixelsToHistory: () => void
   clearLastHoveredPixel: () => void
-  clearPixels: () => void
+  fillCanvas: (color: number) => void
   fill: (index: number) => void
   undo: () => void
   redo: () => void
@@ -91,9 +91,9 @@ export const useStore = create<State>()(
       setDragging: dragging => set({ dragging }),
       setTool: tool => set({ tool }),
       setTempEyeDropper: value => set({ tempEyeDropper: value }),
-      clearPixels: () => {
+      fillCanvas: color => {
         get().pushPixelsToHistory()
-        set(state => ({ pixels: state.pixels.map(_ => 0) }))
+        set(state => ({ pixels: state.pixels.map(_ => color) }))
       },
 
       startDragging: index => {
