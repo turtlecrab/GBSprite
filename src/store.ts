@@ -27,7 +27,9 @@ export interface State {
   tool: Tool
   dragging: boolean
   lastHoveredPixel: number | null
-  tempEyeDropper: boolean
+  altPressed: boolean
+  shiftPressed: boolean
+  ctrlPressed: boolean
   history: UndoSnapshot[]
   redoHistory: UndoSnapshot[]
   zoom: number
@@ -41,7 +43,9 @@ export interface State {
   setPixel: (index: number) => void
   setDragging: (drag: boolean) => void
   setTool: (tool: Tool) => void
-  setTempEyeDropper: (value: boolean) => void
+  setAltPressed: (value: boolean) => void
+  setShiftPressed: (value: boolean) => void
+  setCtrlPressed: (value: boolean) => void
   startDragging: (index: number) => void
   hoverPixel: (index: number) => void
   stopDragging: () => void
@@ -73,7 +77,9 @@ export const useStore = create<State>()(
       tool: 'pencil',
       dragging: false,
       lastHoveredPixel: null,
-      tempEyeDropper: false,
+      altPressed: false,
+      shiftPressed: false,
+      ctrlPressed: false,
       history: [],
       redoHistory: [],
       zoom: 32,
@@ -90,16 +96,17 @@ export const useStore = create<State>()(
         })),
       setDragging: dragging => set({ dragging }),
       setTool: tool => set({ tool }),
-      setTempEyeDropper: value => set({ tempEyeDropper: value }),
+      setAltPressed: value => set({ altPressed: value }),
+      setShiftPressed: value => set({ shiftPressed: value }),
+      setCtrlPressed: value => set({ ctrlPressed: value }),
       fillCanvas: color => {
         get().pushPixelsToHistory()
         set(state => ({ pixels: state.pixels.map(_ => color) }))
       },
 
       startDragging: index => {
-        if (get().tempEyeDropper) {
+        if (get().altPressed) {
           get().setColor(get().pixels[index])
-          get().setTempEyeDropper(false)
           return
         }
 

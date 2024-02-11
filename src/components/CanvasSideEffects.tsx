@@ -14,32 +14,19 @@ const cursors = {
  */
 export function CanvasSideEffects() {
   const tool = useStore(state => state.tool)
-  const tempEyeDropper = useStore(state => state.tempEyeDropper)
-  const color = useStore(state => state.color)
-  const palette = useStore(state => state.palette)
+  const altPressed = useStore(state => state.altPressed)
   const zoom = useStore(state => state.zoom)
 
   // cell cursor style
   useEffect(() => {
     document.body.style.setProperty(
-      '--cell-cursor',
-      tempEyeDropper ? cursors['eyeDropper'] : cursors[tool],
+      '--canvas-cursor',
+      altPressed ? cursors['eyeDropper'] : cursors[tool],
     )
     return () => {
-      document.body.style.removeProperty('--cell-cursor')
+      document.body.style.removeProperty('--canvas-cursor')
     }
-  }, [tempEyeDropper, tool])
-
-  // cell hover style
-  useEffect(() => {
-    document.body.style.setProperty(
-      '--cell-hover-color',
-      tempEyeDropper ? '' : palette[color],
-    )
-    return () => {
-      document.body.style.removeProperty('--cell-hover-color')
-    }
-  }, [tempEyeDropper, tool, color, palette])
+  }, [altPressed, tool])
 
   // pixel scale
   useEffect(() => {

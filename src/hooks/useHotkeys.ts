@@ -5,7 +5,9 @@ import { useStore } from '../store'
 export function useHotkeys() {
   const setColor = useStore(state => state.setColor)
   const setTool = useStore(state => state.setTool)
-  const setTempEyeDropper = useStore(state => state.setTempEyeDropper)
+  const setAltPressed = useStore(state => state.setAltPressed)
+  const setShiftPressed = useStore(state => state.setShiftPressed)
+  const setCtrlPressed = useStore(state => state.setCtrlPressed)
   const undo = useStore(state => state.undo)
   const redo = useStore(state => state.redo)
   const zoomIn = useStore(state => state.zoomIn)
@@ -13,7 +15,7 @@ export function useHotkeys() {
   const toggleGridVisible = useStore(state => state.toggleGridVisible)
 
   useEffect(() => {
-    function handleKey(e: KeyboardEvent) {
+    function handleKeyDown(e: KeyboardEvent) {
       // prettier-ignore
       switch (e.code) {
         case 'Digit1': setColor(0); break
@@ -25,53 +27,69 @@ export function useHotkeys() {
         case 'Equal': zoomIn(); break
         case 'Minus': zoomOut(); break
       }
-      if (e.code === 'KeyZ' && e.ctrlKey && !e.shiftKey) {
-        undo()
-      }
+
+      // Ctrl+Z
+      if (e.code === 'KeyZ' && e.ctrlKey && !e.shiftKey) undo()
+
+      // Ctrl+Y || Ctrl+Shift+Z
       if (
         (e.code === 'KeyY' && e.ctrlKey) ||
         (e.code === 'KeyZ' && e.ctrlKey && e.shiftKey)
-      ) {
+      )
         redo()
+
+      // Ctrl+'
+      if (e.code === 'Quote' && e.ctrlKey) toggleGridVisible()
+
+      // Alt
+      if (!e.repeat && (e.code === 'AltLeft' || e.code === 'AltRight')) {
+        setAltPressed(true)
+        e.preventDefault()
       }
-      if (e.code === 'Quote' && e.ctrlKey) {
-        toggleGridVisible()
+      // Shift
+      if (!e.repeat && (e.code === 'ShiftLeft' || e.code === 'ShiftRight')) {
+        setShiftPressed(true)
+      }
+      // Ctrl
+      if (
+        !e.repeat &&
+        (e.code === 'ControlLeft' || e.code === 'ControlRight')
+      ) {
+        setCtrlPressed(true)
       }
     }
 
-    function handleKeyDown(e: KeyboardEvent) {
-      if (!e.repeat && (e.altKey || e.ctrlKey)) {
-        setTempEyeDropper(true)
-      }
-    }
     function handleKeyUp(e: KeyboardEvent) {
-      if (!e.altKey && !e.ctrlKey) {
-        setTempEyeDropper(false)
-      }
-    }
-    function resetTempEyeDropper() {
-      setTempEyeDropper(false)
+      if (!e.altKey) setAltPressed(false)
+      if (!e.shiftKey) setShiftPressed(false)
+      if (!e.ctrlKey) setCtrlPressed(false)
     }
 
-    document.addEventListener('keydown', handleKey)
+    function handleWindowBlur() {
+      setAltPressed(false)
+      setShiftPressed(false)
+      setCtrlPressed(false)
+    }
+
     document.addEventListener('keydown', handleKeyDown)
     document.addEventListener('keyup', handleKeyUp)
-    window.addEventListener('blur', resetTempEyeDropper)
+    window.addEventListener('blur', handleWindowBlur)
 
     return () => {
-      document.removeEventListener('keydown', handleKey)
       document.removeEventListener('keydown', handleKeyDown)
       document.removeEventListener('keyup', handleKeyUp)
-      window.removeEventListener('blur', resetTempEyeDropper)
+      window.removeEventListener('blur', handleWindowBlur)
     }
   }, [
     setColor,
     setTool,
-    setTempEyeDropper,
     undo,
     redo,
     zoomIn,
     zoomOut,
     toggleGridVisible,
+    setAltPressed,
+    setShiftPressed,
+    setCtrlPressed,
   ])
 }

@@ -15,7 +15,7 @@ export function Canvas() {
   const gridVisible = useStore(state => state.gridVisible)
   const color = useStore(state => state.color)
   const lastHoveredPixel = useStore(state => state.lastHoveredPixel)
-  const tempEyeDropper = useStore(state => state.tempEyeDropper)
+  const altPressed = useStore(state => state.altPressed)
   const draft = useStore(state => state.draft)
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
@@ -90,7 +90,7 @@ export function Canvas() {
       draftCtx.fillRect(x, y, 1, 1)
     })
 
-    if (lastHoveredPixel !== null && !tempEyeDropper) {
+    if (lastHoveredPixel !== null && !altPressed) {
       const { x, y } = getPixelCoords(lastHoveredPixel, pixelWidth)
       draftCtx.fillRect(x, y, 1, 1)
     }
@@ -101,8 +101,8 @@ export function Canvas() {
     palette,
     color,
     lastHoveredPixel,
-    tempEyeDropper,
     draft,
+    altPressed,
   ])
 
   function pointerDown(e: React.PointerEvent) {
@@ -163,7 +163,7 @@ const MainCanvas = styled.canvas<{ width: number; height: number }>`
   width: calc(${p => p.width} * var(--pixel-size));
   height: calc(${p => p.height} * var(--pixel-size));
 
-  cursor: var(--cell-cursor);
+  cursor: var(--canvas-cursor);
 `
 
 const DraftCanvas = styled.canvas<{ width: number; height: number }>`
