@@ -3,20 +3,27 @@ import { persist } from 'zustand/middleware'
 
 import { arePixelsAtRightAngle, getLine } from './lib/utils'
 
-export type Tool = 'pencil' | 'bucket'
-
 const DEFAULT_SPRITE_SIZE = 8
 const DEFAULT_WIDTH = 1
 const DEFAULT_HEIGHT = 1
 const DEFAULT_PIXELS_SIZE =
   DEFAULT_SPRITE_SIZE * DEFAULT_SPRITE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
-interface UndoSnapshot {
+export type Tool = 'pencil' | 'bucket'
+
+interface StateSnapshot {
   pixels: number[]
   width: number
   height: number
   lastDrawnPixel: number | null
 }
+
+const getStateSnapshot = (state: State): StateSnapshot => ({
+  pixels: state.pixels,
+  width: state.width,
+  height: state.height,
+  lastDrawnPixel: state.lastDrawnPixel,
+})
 
 export interface State {
   palette: string[]
@@ -32,8 +39,8 @@ export interface State {
   altPressed: boolean
   shiftPressed: boolean
   ctrlPressed: boolean
-  history: UndoSnapshot[]
-  redoHistory: UndoSnapshot[]
+  history: StateSnapshot[]
+  redoHistory: StateSnapshot[]
   zoom: number
   zoomLevels: number[]
   previewZoom: number
@@ -52,7 +59,7 @@ export interface State {
   hoverPixel: (index: number) => void
   stopDragging: () => void
   commitDraft: () => void
-  pushPixelsToHistory: () => void
+  pushStateToHistory: () => void
   clearLastHoveredPixel: () => void
   fillCanvas: (color: number) => void
   fill: (index: number) => void
@@ -125,7 +132,7 @@ export const useStore = create<State>()(
       },
       setCtrlPressed: ctrlPressed => set({ ctrlPressed }),
       fillCanvas: color => {
-        get().pushPixelsToHistory()
+        get().pushStateToHistory()
         set(state => ({ pixels: state.pixels.map(_ => color) }))
       },
 
@@ -142,7 +149,7 @@ export const useStore = create<State>()(
             set({ draft: [...get().draft, [index, index]] })
             break
           case 'bucket':
-            get().pushPixelsToHistory()
+            get().pushStateToHistory()
             get().fill(index)
             break
         }
@@ -209,7 +216,7 @@ export const useStore = create<State>()(
       commitDraft: () => {
         if (get().draft.length === 0) return
 
-        get().pushPixelsToHistory()
+        get().pushStateToHistory()
         const draftSet = new Set(get().draft.flat())
         const color = get().color
         set({
@@ -217,24 +224,14 @@ export const useStore = create<State>()(
           pixels: get().pixels.map((pixel, i) =>
             draftSet.has(i) ? color : pixel,
           ),
-          lastDrawnPixel: get().draft.at(-1)!.at(-1),
+          lastDrawnPixel: get().draft.at(-1)?.at(-1) ?? null,
         })
       },
-      pushPixelsToHistory: () => {
+      pushStateToHistory: () =>
         set(state => ({
-          history: [
-            ...state.history,
-            {
-              // TODO
-              pixels: [...state.pixels],
-              width: state.width,
-              height: state.height,
-              lastDrawnPixel: state.lastDrawnPixel,
-            },
-          ],
+          history: [...state.history, getStateSnapshot(state)],
           redoHistory: [],
-        }))
-      },
+        })),
       clearLastHoveredPixel: () => set({ lastHoveredPixel: null }),
       fill: index => {
         const pixels = [...get().pixels]
@@ -273,45 +270,21 @@ export const useStore = create<State>()(
       undo: () => {
         if (get().history.length === 0) return
 
-        const prev = get().history.at(-1)!
+        const prevState = get().history.at(-1)!
         set({
           history: get().history.slice(0, -1),
-          redoHistory: [
-            ...get().redoHistory,
-            {
-              // TODO
-              pixels: get().pixels,
-              width: get().width,
-              height: get().height,
-              lastDrawnPixel: get().lastDrawnPixel,
-            },
-          ],
-          pixels: prev.pixels,
-          width: prev.width,
-          height: prev.height,
-          lastDrawnPixel: prev.lastDrawnPixel,
+          redoHistory: [...get().redoHistory, getStateSnapshot(get())],
+          ...prevState,
         })
       },
       redo: () => {
         if (get().redoHistory.length === 0) return
 
-        const next = get().redoHistory.at(-1)!
+        const nextState = get().redoHistory.at(-1)!
         set({
           redoHistory: get().redoHistory.slice(0, -1),
-          history: [
-            ...get().history,
-            {
-              // TODO
-              pixels: get().pixels,
-              width: get().width,
-              height: get().height,
-              lastDrawnPixel: get().lastDrawnPixel,
-            },
-          ],
-          pixels: next.pixels,
-          width: next.width,
-          height: next.height,
-          lastDrawnPixel: next.lastDrawnPixel,
+          history: [...get().history, getStateSnapshot(get())],
+          ...nextState,
         })
       },
       zoomIn: () => {
@@ -330,7 +303,7 @@ export const useStore = create<State>()(
       },
       setPreviewZoom: zoom => set({ previewZoom: zoom }),
       setSize: (newWidth, newHeight) => {
-        // TODO: refactor
+        // TODO: refactor(?), add pivot points
         if (newWidth === get().width && newHeight === get().height) return
 
         let newPixels: number[] = []
@@ -348,7 +321,7 @@ export const useStore = create<State>()(
               ),
             )
           }
-        } else if (newWidth >= get().width) {
+        } else {
           // add pixels on the right
           for (let i = 0; i < minPixelHeight; i++) {
             newPixels.push(
@@ -371,21 +344,12 @@ export const useStore = create<State>()(
             ).fill(0),
           )
         }
+        get().pushStateToHistory()
         set({
+          // TODO: reset last drawn pixel?
           pixels: newPixels,
           width: newWidth,
           height: newHeight,
-          history: [
-            ...get().history,
-            {
-              // TODO
-              pixels: get().pixels,
-              width: get().width,
-              height: get().height,
-              lastDrawnPixel: get().lastDrawnPixel,
-            },
-          ],
-          redoHistory: [],
         })
       },
       setGridVisible: gridVisible => set({ gridVisible }),
