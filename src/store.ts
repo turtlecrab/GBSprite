@@ -15,6 +15,7 @@ interface UndoSnapshot {
   pixels: number[]
   width: number
   height: number
+  lastDrawnPixel: number | null
 }
 
 export interface State {
@@ -27,6 +28,7 @@ export interface State {
   tool: Tool
   dragging: boolean
   lastHoveredPixel: number | null
+  lastDrawnPixel: number | null
   altPressed: boolean
   shiftPressed: boolean
   ctrlPressed: boolean
@@ -77,6 +79,7 @@ export const useStore = create<State>()(
       tool: 'pencil',
       dragging: false,
       lastHoveredPixel: null,
+      lastDrawnPixel: null,
       altPressed: false,
       shiftPressed: false,
       ctrlPressed: false,
@@ -96,9 +99,31 @@ export const useStore = create<State>()(
         })),
       setDragging: dragging => set({ dragging }),
       setTool: tool => set({ tool }),
-      setAltPressed: value => set({ altPressed: value }),
-      setShiftPressed: value => set({ shiftPressed: value }),
-      setCtrlPressed: value => set({ ctrlPressed: value }),
+      setAltPressed: altPressed => set({ altPressed }),
+      setShiftPressed: shiftPressed => {
+        // TODO: refactor?
+        if (
+          get().tool === 'pencil' &&
+          !get().dragging &&
+          get().lastDrawnPixel !== null
+        ) {
+          if (shiftPressed && get().lastHoveredPixel !== null) {
+            set({
+              draft: [
+                getLine(
+                  get().lastDrawnPixel,
+                  get().lastHoveredPixel!,
+                  get().width * get().spriteSize,
+                ),
+              ],
+            })
+          } else {
+            set({ draft: [] })
+          }
+        }
+        set({ shiftPressed })
+      },
+      setCtrlPressed: ctrlPressed => set({ ctrlPressed }),
       fillCanvas: color => {
         get().pushPixelsToHistory()
         set(state => ({ pixels: state.pixels.map(_ => color) }))
@@ -114,10 +139,7 @@ export const useStore = create<State>()(
           case 'pencil':
             get().setDragging(true)
 
-            if (get().draft.length > 0) {
-              get().commitDraft()
-            }
-            set({ draft: [[index, index]] })
+            set({ draft: [...get().draft, [index, index]] })
             break
           case 'bucket':
             get().pushPixelsToHistory()
@@ -128,12 +150,21 @@ export const useStore = create<State>()(
       hoverPixel: index => {
         if (index === get().lastHoveredPixel) return
 
+        // TODO: refactor this mess
         switch (get().tool) {
           case 'pencil': {
-            if (!get().dragging) break
+            if (!get().dragging && !get().shiftPressed) break
+
+            if (!get().dragging && get().shiftPressed) {
+              if (!get().lastDrawnPixel) break
+
+              // not dragging, shift pressed & has last drawn pixel -> line preview
+              const width = get().width * get().spriteSize
+              set({ draft: [getLine(get().lastDrawnPixel, index, width)] })
+              break
+            }
 
             // pixel-perfect pencil
-            // TODO: refactor this mess
             const width = get().width * get().spriteSize
             const newLine = getLine(get().lastHoveredPixel, index, width)
             const prevLine = get().draft.at(-1)!
@@ -186,6 +217,7 @@ export const useStore = create<State>()(
           pixels: get().pixels.map((pixel, i) =>
             draftSet.has(i) ? color : pixel,
           ),
+          lastDrawnPixel: get().draft.at(-1)!.at(-1),
         })
       },
       pushPixelsToHistory: () => {
@@ -193,9 +225,11 @@ export const useStore = create<State>()(
           history: [
             ...state.history,
             {
+              // TODO
               pixels: [...state.pixels],
               width: state.width,
               height: state.height,
+              lastDrawnPixel: state.lastDrawnPixel,
             },
           ],
           redoHistory: [],
@@ -244,11 +278,18 @@ export const useStore = create<State>()(
           history: get().history.slice(0, -1),
           redoHistory: [
             ...get().redoHistory,
-            { pixels: get().pixels, width: get().width, height: get().height },
+            {
+              // TODO
+              pixels: get().pixels,
+              width: get().width,
+              height: get().height,
+              lastDrawnPixel: get().lastDrawnPixel,
+            },
           ],
           pixels: prev.pixels,
           width: prev.width,
           height: prev.height,
+          lastDrawnPixel: prev.lastDrawnPixel,
         })
       },
       redo: () => {
@@ -259,11 +300,18 @@ export const useStore = create<State>()(
           redoHistory: get().redoHistory.slice(0, -1),
           history: [
             ...get().history,
-            { pixels: get().pixels, width: get().width, height: get().height },
+            {
+              // TODO
+              pixels: get().pixels,
+              width: get().width,
+              height: get().height,
+              lastDrawnPixel: get().lastDrawnPixel,
+            },
           ],
           pixels: next.pixels,
           width: next.width,
           height: next.height,
+          lastDrawnPixel: next.lastDrawnPixel,
         })
       },
       zoomIn: () => {
@@ -330,9 +378,11 @@ export const useStore = create<State>()(
           history: [
             ...get().history,
             {
+              // TODO
               pixels: get().pixels,
               width: get().width,
               height: get().height,
+              lastDrawnPixel: get().lastDrawnPixel,
             },
           ],
           redoHistory: [],

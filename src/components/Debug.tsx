@@ -1,10 +1,12 @@
 import { styled } from '@linaria/react'
 
+import { getPixelCoords } from '../lib/utils'
 import { useStore } from '../store'
 
 export function Debug() {
   const dragging = useStore(state => state.dragging)
   const lastHoveredPixel = useStore(state => state.lastHoveredPixel)
+  const lastDrawnPixel = useStore(state => state.lastDrawnPixel)
   const pixelWidth = useStore(state => state.width * state.spriteSize)
   const altPressed = useStore(state => state.altPressed)
   const shiftPressed = useStore(state => state.shiftPressed)
@@ -20,8 +22,16 @@ export function Debug() {
       <li>
         lastHoveredPixel: {String(lastHoveredPixel)}{' '}
         {lastHoveredPixel !== null &&
-          `(${lastHoveredPixel % pixelWidth}, ` +
-            `${(lastHoveredPixel - (lastHoveredPixel % pixelWidth)) / pixelWidth})`}
+          JSON.stringify(
+            Object.values(getPixelCoords(lastHoveredPixel, pixelWidth)),
+          )}
+      </li>
+      <li>
+        lastDrawnPixel: {String(lastDrawnPixel)}{' '}
+        {lastDrawnPixel !== null &&
+          JSON.stringify(
+            Object.values(getPixelCoords(lastDrawnPixel, pixelWidth)),
+          )}
       </li>
     </List>
   )
