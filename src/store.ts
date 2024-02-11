@@ -3,11 +3,11 @@ import { persist } from 'zustand/middleware'
 
 import { arePixelsAtRightAngle, getLine, getPixelCoords } from './lib/utils'
 
-const DEFAULT_SPRITE_SIZE = 8
+const DEFAULT_TILE_SIZE = 8
 const DEFAULT_WIDTH = 1
 const DEFAULT_HEIGHT = 1
 const DEFAULT_PIXELS_SIZE =
-  DEFAULT_SPRITE_SIZE * DEFAULT_SPRITE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
+  DEFAULT_TILE_SIZE * DEFAULT_TILE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
 export type Tool = 'pencil' | 'bucket'
 
@@ -27,9 +27,9 @@ const getStateSnapshot = (state: State): StateSnapshot => ({
 
 export interface State {
   palette: string[]
-  spriteSize: number
-  width: number // of sprites
-  height: number // of sprites
+  tileSize: number
+  width: number // of tiles
+  height: number // of tiles
   pixels: number[]
   color: number
   tool: Tool
@@ -78,7 +78,7 @@ export const useStore = create<State>()(
     (set, get) => ({
       // palette: ['#fff', '#aaa', '#444', '#000'],
       palette: ['#e0f8d0', '#88c070', '#346856', '#081820'],
-      spriteSize: DEFAULT_SPRITE_SIZE,
+      tileSize: DEFAULT_TILE_SIZE,
       width: DEFAULT_WIDTH,
       height: DEFAULT_HEIGHT,
       pixels: Array(DEFAULT_PIXELS_SIZE).fill(0),
@@ -120,7 +120,7 @@ export const useStore = create<State>()(
                 getLine(
                   get().lastDrawnPixel,
                   get().lastHoveredPixel!,
-                  get().width * get().spriteSize,
+                  get().width * get().tileSize,
                 ),
               ],
             })
@@ -166,13 +166,13 @@ export const useStore = create<State>()(
               if (!get().lastDrawnPixel) break
 
               // not dragging, shift pressed & has last drawn pixel -> line preview
-              const width = get().width * get().spriteSize
+              const width = get().width * get().tileSize
               set({ draft: [getLine(get().lastDrawnPixel, index, width)] })
               break
             }
 
             // pixel-perfect pencil
-            const width = get().width * get().spriteSize
+            const width = get().width * get().tileSize
             const newLine = getLine(get().lastHoveredPixel, index, width)
             const prevLine = get().draft.at(-1)!
 
@@ -235,7 +235,7 @@ export const useStore = create<State>()(
       clearLastHoveredPixel: () => set({ lastHoveredPixel: null }),
       fill: index => {
         const pixels = [...get().pixels]
-        const width = get().width * DEFAULT_SPRITE_SIZE
+        const width = get().width * DEFAULT_TILE_SIZE
         const startColor = pixels[index]
         const replaceColor = get().color
 
@@ -309,10 +309,10 @@ export const useStore = create<State>()(
 
         const newPixels: number[] = []
 
-        const oldPixelWidth = state.width * state.spriteSize
-        const newPixelWidth = newWidth * state.spriteSize
+        const oldPixelWidth = state.width * state.tileSize
+        const newPixelWidth = newWidth * state.tileSize
         const minPixelHeight =
-          Math.min(state.height, newHeight) * state.spriteSize
+          Math.min(state.height, newHeight) * state.tileSize
 
         if (newWidth < state.width) {
           // crop right
@@ -337,7 +337,7 @@ export const useStore = create<State>()(
         if (newHeight > state.height) {
           // add pixels at the bottom
           const remainingPixelHeight =
-            (newHeight - state.height) * state.spriteSize
+            (newHeight - state.height) * state.tileSize
 
           newPixels.push(...Array(remainingPixelHeight * newPixelWidth).fill(0))
         }
@@ -369,7 +369,7 @@ export const useStore = create<State>()(
     {
       name: 'GBSprite',
       partialize: state => ({
-        spriteSize: state.spriteSize,
+        tileSize: state.tileSize,
         width: state.width,
         height: state.height,
         pixels: state.pixels,

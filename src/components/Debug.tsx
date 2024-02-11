@@ -7,7 +7,7 @@ export function Debug() {
   const dragging = useStore(state => state.dragging)
   const lastHoveredPixel = useStore(state => state.lastHoveredPixel)
   const lastDrawnPixel = useStore(state => state.lastDrawnPixel)
-  const pixelWidth = useStore(state => state.width * state.spriteSize)
+  const pixelWidth = useStore(state => state.width * state.tileSize)
   const altPressed = useStore(state => state.altPressed)
   const shiftPressed = useStore(state => state.shiftPressed)
   const ctrlPressed = useStore(state => state.ctrlPressed)

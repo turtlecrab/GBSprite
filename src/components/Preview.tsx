@@ -8,15 +8,15 @@ export function Preview() {
   const pixels = useStore(state => state.pixels)
   const tileWidth = useStore(state => state.width)
   const tileHeight = useStore(state => state.height)
-  const spriteSize = useStore(state => state.spriteSize)
+  const tileSize = useStore(state => state.tileSize)
   const palette = useStore(state => state.palette)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null)
   const [isTiled, setIsTiled] = useState(true)
 
-  const pixelWidth = spriteSize * tileWidth
-  const pixelHeight = spriteSize * tileHeight
+  const pixelWidth = tileSize * tileWidth
+  const pixelHeight = tileSize * tileHeight
 
   useEffect(() => {
     if (!canvasRef.current) return
