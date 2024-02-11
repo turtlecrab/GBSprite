@@ -303,60 +303,54 @@ export const useStore = create<State>()(
       },
       setPreviewZoom: zoom => set({ previewZoom: zoom }),
       setSize: (newWidth, newHeight) => {
-        // TODO: refactor(?), add pivot points
-        if (newWidth === get().width && newHeight === get().height) return
+        // TODO: add pivot points
+        const state = get()
+        if (newWidth === state.width && newHeight === state.height) return
 
-        let newPixels: number[] = []
+        const newPixels: number[] = []
+
+        const oldPixelWidth = state.width * state.spriteSize
+        const newPixelWidth = newWidth * state.spriteSize
         const minPixelHeight =
-          Math.min(get().height, newHeight) * get().spriteSize
+          Math.min(state.height, newHeight) * state.spriteSize
 
-        if (newWidth < get().width) {
+        if (newWidth < state.width) {
           // crop right
           for (let i = 0; i < minPixelHeight; i++) {
+            const offset = oldPixelWidth * i
+
             newPixels.push(
-              ...get().pixels.slice(
-                get().width * get().spriteSize * i,
-                get().width * get().spriteSize * i +
-                  newWidth * get().spriteSize,
-              ),
+              ...state.pixels.slice(offset, offset + newPixelWidth),
             )
           }
         } else {
           // add pixels on the right
           for (let i = 0; i < minPixelHeight; i++) {
+            const offset = oldPixelWidth * i
+
             newPixels.push(
-              ...get().pixels.slice(
-                get().width * get().spriteSize * i,
-                get().width * get().spriteSize * (i + 1),
-              ),
-              ...Array((newWidth - get().width) * get().spriteSize).fill(0),
+              ...state.pixels.slice(offset, offset + oldPixelWidth),
+              ...Array(newPixelWidth - oldPixelWidth).fill(0),
             )
           }
         }
-        if (newHeight > get().height) {
+        if (newHeight > state.height) {
           // add pixels at the bottom
-          newPixels.push(
-            ...Array(
-              (newHeight - get().height) *
-                newWidth *
-                get().spriteSize *
-                get().spriteSize,
-            ).fill(0),
-          )
+          const remainingPixelHeight =
+            (newHeight - state.height) * state.spriteSize
+
+          newPixels.push(...Array(remainingPixelHeight * newPixelWidth).fill(0))
         }
 
         // offset last drawn pixel position
         let newLastDrawnPixel = null
 
-        if (get().lastDrawnPixel !== null) {
-          const { x, y } = getPixelCoords(
-            get().lastDrawnPixel!,
-            get().width * get().spriteSize,
-          )
+        if (state.lastDrawnPixel !== null) {
+          const { x, y } = getPixelCoords(state.lastDrawnPixel, oldPixelWidth)
           // keep last drawn pixel only when it's not cropped from the right
           // because in this case we can't represent its position by index
-          if (x < newWidth * get().spriteSize) {
-            newLastDrawnPixel = y * newWidth * get().spriteSize + x
+          if (x < newPixelWidth) {
+            newLastDrawnPixel = y * newPixelWidth + x
           }
         }
 
@@ -366,7 +360,7 @@ export const useStore = create<State>()(
           height: newHeight,
           lastDrawnPixel: newLastDrawnPixel,
         }
-        get().pushStateToHistory()
+        state.pushStateToHistory()
         set(resizedState)
       },
       setGridVisible: gridVisible => set({ gridVisible }),
