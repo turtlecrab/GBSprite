@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { arePixelsAtRightAngle, getLine } from './lib/utils'
+import { arePixelsAtRightAngle, getLine, getPixelCoords } from './lib/utils'
 
 const DEFAULT_SPRITE_SIZE = 8
 const DEFAULT_WIDTH = 1
@@ -344,13 +344,30 @@ export const useStore = create<State>()(
             ).fill(0),
           )
         }
-        get().pushStateToHistory()
-        set({
-          // TODO: reset last drawn pixel?
+
+        // offset last drawn pixel position
+        let newLastDrawnPixel = null
+
+        if (get().lastDrawnPixel !== null) {
+          const { x, y } = getPixelCoords(
+            get().lastDrawnPixel!,
+            get().width * get().spriteSize,
+          )
+          // keep last drawn pixel only when it's not cropped from the right
+          // because in this case we can't represent its position by index
+          if (x < newWidth * get().spriteSize) {
+            newLastDrawnPixel = y * newWidth * get().spriteSize + x
+          }
+        }
+
+        const resizedState: StateSnapshot = {
           pixels: newPixels,
           width: newWidth,
           height: newHeight,
-        })
+          lastDrawnPixel: newLastDrawnPixel,
+        }
+        get().pushStateToHistory()
+        set(resizedState)
       },
       setGridVisible: gridVisible => set({ gridVisible }),
       toggleGridVisible: () => set({ gridVisible: !get().gridVisible }),
