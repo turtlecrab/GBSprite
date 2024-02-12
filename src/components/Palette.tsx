@@ -22,14 +22,24 @@ export function Palette() {
       {palette.map((c, i) => (
         <ColorButton
           $color={c}
-          $selected={color === i}
           onClick={e => handleButtonClick(e, i)}
           aria-label={'Color #' + i}
           key={i}
-        />
+        >
+          {color === i && <SelectedMarker $color={getContrastColor(c)} />}
+        </ColorButton>
       ))}
     </Container>
   )
+}
+
+function getContrastColor(color: string): string {
+  const [r, g, b] = color
+    .match(/^#(..)(..)(..)$/)!
+    .slice(1)
+    .map(v => parseInt(v, 16))
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+  return luminance > 128 ? 'var(--contrast-black)' : 'var(--contrast-white)'
 }
 
 const Container = styled.div`
@@ -38,13 +48,25 @@ const Container = styled.div`
   gap: 4px;
 `
 
-const ColorButton = styled.button<{ $color: string; $selected: boolean }>`
+const ColorButton = styled.button<{ $color: string }>`
   cursor: pointer;
   background-color: ${p => p.$color};
-  outline: ${p => (p.$selected ? '2px solid black' : 'none')};
   width: 32px;
   height: 32px;
-  border: 1px solid lavender;
+  border: 1px solid ${p => p.$color};
   border-radius: 4px;
   box-shadow: 2px 2px 0px lavender;
+  position: relative;
+  overflow: hidden;
+`
+
+const SelectedMarker = styled.span<{ $color: string }>`
+  position: absolute;
+  background-color: ${p => p.$color};
+  display: block;
+  width: 24px;
+  height: 24px;
+  top: -14px;
+  left: -14px;
+  transform: rotate(45deg);
 `

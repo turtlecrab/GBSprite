@@ -7,11 +7,20 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   color: #212529;
 
   --pixel-size: 32px;
+
+  --contrast-black: #212529;
+  --contrast-white: #f8f9fa;
 }
 
 #root {
