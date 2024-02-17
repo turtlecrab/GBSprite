@@ -15,6 +15,16 @@ export function getLine(
   const { x: x0, y: y0 } = getPixelCoords(startIndex, width)
   const { x: x1, y: y1 } = getPixelCoords(endIndex, width)
 
+  return getLineByCoords(x0, y0, x1, y1, width)
+}
+
+export function getLineByCoords(
+  x0: number,
+  y0: number,
+  x1: number,
+  y1: number,
+  width: number,
+): number[] {
   if (Math.abs(y1 - y0) < Math.abs(x1 - x0))
     if (x0 > x1) {
       return getLineLow(x1, y1, x0, y0, width).reverse()

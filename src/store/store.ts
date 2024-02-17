@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 import { getLine, getPixelCoords } from '../lib/utils'
 import { bucket } from './tools/bucket'
 import { pencil } from './tools/pencil'
+import { rect } from './tools/rect'
 
 const DEFAULT_TILE_SIZE = 8
 const DEFAULT_WIDTH = 1
@@ -11,7 +12,7 @@ const DEFAULT_HEIGHT = 1
 const DEFAULT_PIXELS_SIZE =
   DEFAULT_TILE_SIZE * DEFAULT_TILE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
-export type Tool = 'pencil' | 'bucket'
+export type Tool = 'pencil' | 'bucket' | 'rect'
 
 interface StateSnapshot {
   pixels: number[]
@@ -39,6 +40,7 @@ export interface State {
   color: number
   tool: Tool
   dragging: boolean
+  draggingFrom: number | null
   lastHoveredPixel: number | null
   lastDrawnPixel: number | null
   altPressed: boolean
@@ -87,6 +89,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   color: 3,
   tool: 'pencil',
   dragging: false,
+  draggingFrom: null,
   lastHoveredPixel: null,
   lastDrawnPixel: null,
   altPressed: false,
@@ -158,6 +161,9 @@ const initializer: StateCreator<State> = (set, get) => ({
       case 'bucket':
         bucket.startDragging(index, set, get)
         break
+      case 'rect':
+        rect.startDragging(index, set, get)
+        break
     }
   },
   hoverPixel: index => {
@@ -167,6 +173,9 @@ const initializer: StateCreator<State> = (set, get) => ({
       case 'pencil':
         pencil.hoverPixel(index, set, get)
         break
+      case 'rect':
+        rect.hoverPixel(index, set, get)
+        break
     }
     set({ lastHoveredPixel: index })
   },
@@ -175,6 +184,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     get().setDragging(false)
 
     get().commitDraft()
+    set({ draggingFrom: null })
   },
   commitDraft: () => {
     if (get().draft.length === 0) return

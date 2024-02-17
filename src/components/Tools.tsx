@@ -1,12 +1,15 @@
 import { styled } from '@linaria/react'
-import { LuPaintBucket, LuPencil } from 'react-icons/lu'
+import { LuPaintBucket, LuPencil, LuRectangleHorizontal } from 'react-icons/lu'
 
 import { Tool, useStore } from '../store/store'
 
 const icons = {
   pencil: LuPencil,
   bucket: LuPaintBucket,
+  rect: LuRectangleHorizontal,
 }
+
+const tools: Tool[] = ['pencil', 'bucket', 'rect']
 
 export function Tools() {
   const tool = useStore(state => state.tool)
@@ -14,7 +17,7 @@ export function Tools() {
 
   return (
     <Container>
-      {['pencil', 'bucket'].map(t => (
+      {tools.map(t => (
         <ToolButton
           $selected={tool === t}
           onClick={() => setTool(t as Tool)}

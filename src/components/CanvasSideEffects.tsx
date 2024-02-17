@@ -5,6 +5,7 @@ import { useStore } from '../store/store'
 const cursors = {
   pencil: 'crosshair',
   bucket: 'crosshair',
+  rect: 'crosshair',
   eyeDropper: 'alias',
 }
 
