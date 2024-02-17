@@ -1,5 +1,10 @@
 import { styled } from '@linaria/react'
-import { LuPaintBucket, LuPencil, LuRectangleHorizontal } from 'react-icons/lu'
+import {
+  LuCircle,
+  LuPaintBucket,
+  LuPencil,
+  LuRectangleHorizontal,
+} from 'react-icons/lu'
 
 import { Tool, useStore } from '../store/store'
 
@@ -7,9 +12,10 @@ const icons = {
   pencil: LuPencil,
   bucket: LuPaintBucket,
   rect: LuRectangleHorizontal,
+  ellipse: LuCircle,
 }
 
-const tools: Tool[] = ['pencil', 'bucket', 'rect']
+const tools: Tool[] = ['pencil', 'bucket', 'rect', 'ellipse']
 
 export function Tools() {
   const tool = useStore(state => state.tool)

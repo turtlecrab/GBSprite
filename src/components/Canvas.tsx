@@ -17,6 +17,7 @@ export function Canvas() {
   const lastHoveredPixel = useStore(state => state.lastHoveredPixel)
   const altPressed = useStore(state => state.altPressed)
   const draft = useStore(state => state.draft)
+  const tool = useStore(state => state.tool)
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
   const hoverPixel = useStore(state => state.hoverPixel)
@@ -90,7 +91,12 @@ export function Canvas() {
       draftCtx.fillRect(x, y, 1, 1)
     })
 
-    if (lastHoveredPixel !== null && !altPressed) {
+    // TODO
+    if (
+      lastHoveredPixel !== null &&
+      !altPressed &&
+      (tool !== 'ellipse' || !draft.length)
+    ) {
       const { x, y } = getPixelCoords(lastHoveredPixel, pixelWidth)
       draftCtx.fillRect(x, y, 1, 1)
     }
@@ -103,6 +109,7 @@ export function Canvas() {
     lastHoveredPixel,
     draft,
     altPressed,
+    tool,
   ])
 
   function pointerDown(e: React.PointerEvent) {

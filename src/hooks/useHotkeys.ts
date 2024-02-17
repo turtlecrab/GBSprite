@@ -16,18 +16,23 @@ export function useHotkeys() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      // prettier-ignore
-      switch (e.code) {
-        case 'Digit1': setColor(0); break
-        case 'Digit2': setColor(1); break
-        case 'Digit3': setColor(2); break
-        case 'Digit4': setColor(3); break
-        case 'KeyB': setTool('pencil'); break
-        case 'KeyG': setTool('bucket'); break
-        case 'KeyU': setTool('rect'); break
-        case 'Equal': zoomIn(); break
-        case 'Minus': zoomOut(); break
+      if (!e.shiftKey && !e.ctrlKey && !e.altKey) {
+        // prettier-ignore
+        switch (e.code) {
+          case 'Digit1': setColor(0); break
+          case 'Digit2': setColor(1); break
+          case 'Digit3': setColor(2); break
+          case 'Digit4': setColor(3); break
+          case 'KeyB': setTool('pencil'); break
+          case 'KeyG': setTool('bucket'); break
+          case 'KeyU': setTool('rect'); break
+          case 'Equal': zoomIn(); break
+          case 'Minus': zoomOut(); break
+        }
       }
+
+      // Shift+U
+      if (e.code === 'KeyU' && e.shiftKey) setTool('ellipse')
 
       // Ctrl+Z
       if (e.code === 'KeyZ' && e.ctrlKey && !e.shiftKey) undo()

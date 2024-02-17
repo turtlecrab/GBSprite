@@ -3,10 +3,11 @@ import { useEffect } from 'react'
 import { useStore } from '../store/store'
 
 const cursors = {
+  eyeDropper: 'alias',
   pencil: 'crosshair',
   bucket: 'crosshair',
   rect: 'crosshair',
-  eyeDropper: 'alias',
+  ellipse: 'crosshair',
 }
 
 /**

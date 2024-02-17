@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 
 import { getLine, getPixelCoords } from '../lib/utils'
 import { bucket } from './tools/bucket'
+import { ellipse } from './tools/ellipse'
 import { pencil } from './tools/pencil'
 import { rect } from './tools/rect'
 
@@ -12,7 +13,7 @@ const DEFAULT_HEIGHT = 1
 const DEFAULT_PIXELS_SIZE =
   DEFAULT_TILE_SIZE * DEFAULT_TILE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
-export type Tool = 'pencil' | 'bucket' | 'rect'
+export type Tool = 'pencil' | 'bucket' | 'rect' | 'ellipse'
 
 interface StateSnapshot {
   pixels: number[]
@@ -164,6 +165,9 @@ const initializer: StateCreator<State> = (set, get) => ({
       case 'rect':
         rect.startDragging(index, set, get)
         break
+      case 'ellipse':
+        ellipse.startDragging(index, set, get)
+        break
     }
   },
   hoverPixel: index => {
@@ -175,6 +179,9 @@ const initializer: StateCreator<State> = (set, get) => ({
         break
       case 'rect':
         rect.hoverPixel(index, set, get)
+        break
+      case 'ellipse':
+        ellipse.hoverPixel(index, set, get)
         break
     }
     set({ lastHoveredPixel: index })
