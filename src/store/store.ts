@@ -215,7 +215,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     })),
   clearLastHoveredPixel: () => set({ lastHoveredPixel: null }),
   undo: () => {
-    if (get().history.length === 0) return
+    if (get().history.length === 0 || get().dragging) return
 
     const prevState = get().history.at(-1)!
     set({
@@ -225,7 +225,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     })
   },
   redo: () => {
-    if (get().redoHistory.length === 0) return
+    if (get().redoHistory.length === 0 || get().dragging) return
 
     const nextState = get().redoHistory.at(-1)!
     set({
