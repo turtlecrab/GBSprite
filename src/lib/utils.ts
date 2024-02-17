@@ -141,3 +141,11 @@ export function arePixelsAtRightAngle(
       Math.abs(x2 - x3) === 1)
   )
 }
+
+export function getLuminance(color: string): number {
+  const [r, g, b] = color
+    .match(/^#(..)(..)(..)$/)!
+    .slice(1)
+    .map(v => parseInt(v, 16))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b
+}

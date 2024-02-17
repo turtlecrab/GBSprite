@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 import { LuRedo2, LuUndo2, LuZoomIn, LuZoomOut } from 'react-icons/lu'
 
 import { useStore } from '../store'
+import { PaletteList } from './PaletteList'
 
 export function ToolBar() {
   const undo = useStore(state => state.undo)
@@ -28,6 +29,7 @@ export function ToolBar() {
       <Button onClick={zoomOut} disabled={zoom <= zoomLevels[0]}>
         <LuZoomOut size="100%" />
       </Button>
+      <PaletteList />
     </Container>
   )
 }

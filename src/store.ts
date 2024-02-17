@@ -48,6 +48,7 @@ export interface State {
   gridVisible: boolean
   draft: number[][]
 
+  setPalette: (palette: string[]) => void
   setColor: (color: number) => void
   setPixel: (index: number) => void
   setDragging: (drag: boolean) => void
@@ -76,7 +77,6 @@ export interface State {
 export const useStore = create<State>()(
   persist(
     (set, get) => ({
-      // palette: ['#fff', '#aaa', '#444', '#000'],
       palette: ['#e0f8d0', '#88c070', '#346856', '#081820'],
       tileSize: DEFAULT_TILE_SIZE,
       width: DEFAULT_WIDTH,
@@ -99,6 +99,13 @@ export const useStore = create<State>()(
       gridVisible: false,
       draft: [],
 
+      setPalette: palette => {
+        if (!palette.every(color => /^#[\da-fA-F]{6}$/.test(color))) {
+          console.error('error parsing palette')
+          return
+        }
+        set({ palette })
+      },
       setColor: color => set({ color }),
       setPixel: index =>
         set(state => ({

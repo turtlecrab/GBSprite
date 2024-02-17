@@ -12,6 +12,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.18",
     "@linaria/core": "^6.0.0",
     "@linaria/react": "^6.0.0",
     "react": "^18.2.0",
