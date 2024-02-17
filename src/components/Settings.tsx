@@ -1,7 +1,7 @@
 import { styled } from '@linaria/react'
 import { useState } from 'react'
 
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 import { Checkbox } from './Checkbox'
 import { NumberInput } from './NumberInput'
 

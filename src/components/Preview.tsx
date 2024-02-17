@@ -1,7 +1,7 @@
 import { styled } from '@linaria/react'
 import { useEffect, useRef, useState } from 'react'
 
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 import { Checkbox } from './Checkbox'
 
 export function Preview() {

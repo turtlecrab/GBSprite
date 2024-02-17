@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 
 export function useHotkeys() {
   const setColor = useStore(state => state.setColor)

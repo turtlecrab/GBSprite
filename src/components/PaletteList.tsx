@@ -5,7 +5,7 @@ import { LuPalette } from 'react-icons/lu'
 import { shallow } from 'zustand/shallow'
 
 import { getLuminance } from '../lib/utils'
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 
 export function PaletteList() {
   const palette = useStore(state => state.palette)

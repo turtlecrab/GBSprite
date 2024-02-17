@@ -1,7 +1,7 @@
 import { styled } from '@linaria/react'
 import { useEffect, useRef } from 'react'
 
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 
 const EDGE_WIDTH = '2px'
 const EDGE_COLOR = 'blue'

@@ -1,7 +1,7 @@
 import { StateCreator, create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { arePixelsAtRightAngle, getLine, getPixelCoords } from './lib/utils'
+import { arePixelsAtRightAngle, getLine, getPixelCoords } from '../lib/utils'
 
 const DEFAULT_TILE_SIZE = 8
 const DEFAULT_WIDTH = 1

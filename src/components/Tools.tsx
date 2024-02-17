@@ -1,7 +1,7 @@
 import { styled } from '@linaria/react'
 import { LuPaintBucket, LuPencil } from 'react-icons/lu'
 
-import { Tool, useStore } from '../store'
+import { Tool, useStore } from '../store/store'
 
 const icons = {
   pencil: LuPencil,

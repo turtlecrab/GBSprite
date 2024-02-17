@@ -2,7 +2,7 @@ import { styled } from '@linaria/react'
 import { useEffect, useRef, useState } from 'react'
 
 import { getPixelCoords } from '../lib/utils'
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 import { CanvasSideEffects } from './CanvasSideEffects'
 import { TileGrid } from './TileGrid'
 

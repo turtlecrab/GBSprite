@@ -1,7 +1,7 @@
 import { styled } from '@linaria/react'
 
 import { exportC } from '../lib/exportC'
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 
 export function Export() {
   async function copy() {

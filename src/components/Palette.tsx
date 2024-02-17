@@ -1,7 +1,7 @@
 import { styled } from '@linaria/react'
 
 import { getLuminance } from '../lib/utils'
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 
 export function Palette() {
   const palette = useStore(state => state.palette)

@@ -1,7 +1,7 @@
 import { styled } from '@linaria/react'
 
 import { getPixelCoords } from '../lib/utils'
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 
 export function Debug() {
   const dragging = useStore(state => state.dragging)

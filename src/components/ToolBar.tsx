@@ -1,7 +1,7 @@
 import { styled } from '@linaria/react'
 import { LuRedo2, LuUndo2, LuZoomIn, LuZoomOut } from 'react-icons/lu'
 
-import { useStore } from '../store'
+import { useStore } from '../store/store'
 import { PaletteList } from './PaletteList'
 
 export function ToolBar() {
