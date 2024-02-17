@@ -118,7 +118,10 @@ const initializer: StateCreator<State> = (set, get) => ({
       pixels: state.pixels.map((p, i) => (i === index ? state.color : p)),
     })),
   setDragging: dragging => set({ dragging }),
-  setTool: tool => set({ tool }),
+  setTool: tool => {
+    if (get().dragging) return
+    set({ tool })
+  },
   setAltPressed: altPressed => set({ altPressed }),
   setShiftPressed: shiftPressed => {
     // TODO: refactor?
