@@ -1,7 +1,9 @@
-import { StateCreator, create } from 'zustand'
+import { StateCreator, StoreApi, create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { arePixelsAtRightAngle, getLine, getPixelCoords } from '../lib/utils'
+import { getLine, getPixelCoords } from '../lib/utils'
+import { bucket } from './tools/bucket'
+import { pencil } from './tools/pencil'
 
 const DEFAULT_TILE_SIZE = 8
 const DEFAULT_WIDTH = 1
@@ -24,6 +26,9 @@ const getStateSnapshot = (state: State): StateSnapshot => ({
   height: state.height,
   lastDrawnPixel: state.lastDrawnPixel,
 })
+
+export type Setter = StoreApi<State>['setState']
+export type Getter = StoreApi<State>['getState']
 
 export interface State {
   palette: string[]
@@ -63,7 +68,6 @@ export interface State {
   pushStateToHistory: () => void
   clearLastHoveredPixel: () => void
   fillCanvas: (color: number) => void
-  fill: (index: number) => void
   undo: () => void
   redo: () => void
   zoomIn: () => void
@@ -149,61 +153,20 @@ const initializer: StateCreator<State> = (set, get) => ({
 
     switch (get().tool) {
       case 'pencil':
-        get().setDragging(true)
-
-        set({ draft: [...get().draft, [index, index]] })
+        pencil.startDragging(index, set, get)
         break
       case 'bucket':
-        get().pushStateToHistory()
-        get().fill(index)
+        bucket.startDragging(index, set, get)
         break
     }
   },
   hoverPixel: index => {
     if (index === get().lastHoveredPixel) return
 
-    // TODO: refactor this mess
     switch (get().tool) {
-      case 'pencil': {
-        if (!get().dragging && !get().shiftPressed) break
-
-        if (!get().dragging && get().shiftPressed) {
-          if (!get().lastDrawnPixel) break
-
-          // not dragging, shift pressed & has last drawn pixel -> line preview
-          const width = get().width * get().tileSize
-          set({ draft: [getLine(get().lastDrawnPixel, index, width)] })
-          break
-        }
-
-        // pixel-perfect pencil
-        const width = get().width * get().tileSize
-        const newLine = getLine(get().lastHoveredPixel, index, width)
-        const prevLine = get().draft.at(-1)!
-
-        if (prevLine.length < 2) throw new Error('bad segment')
-
-        // check for └ ┘ ┌ ┐
-        if (
-          prevLine.at(-1)! === newLine[0] &&
-          arePixelsAtRightAngle(prevLine.at(-2)!, newLine[0], newLine[1], width)
-        ) {
-          // shorten newLine,
-          newLine.shift()
-
-          // shorten prevLine
-          prevLine.pop() // mutating state kinda bad, TODO
-
-          // ensure newLine.length >= 2)
-          if (newLine.length === 1) {
-            newLine.push(newLine[0])
-          }
-        }
-        set({
-          draft: [...get().draft, newLine],
-        })
+      case 'pencil':
+        pencil.hoverPixel(index, set, get)
         break
-      }
     }
     set({ lastHoveredPixel: index })
   },
@@ -231,40 +194,6 @@ const initializer: StateCreator<State> = (set, get) => ({
       redoHistory: [],
     })),
   clearLastHoveredPixel: () => set({ lastHoveredPixel: null }),
-  fill: index => {
-    const pixels = [...get().pixels]
-    const width = get().width * get().tileSize
-    const startColor = pixels[index]
-    const replaceColor = get().color
-
-    const visited = new Set<number>()
-
-    const stack = [index]
-
-    while (stack.length) {
-      const next = stack.pop()!
-
-      // boundary check
-      if (next < 0 || next >= pixels.length) continue
-
-      // already filled check
-      if (visited.has(next)) continue
-
-      // wall check
-      if (pixels[next] !== startColor) continue
-
-      // fill
-      pixels[next] = replaceColor
-      visited.add(next)
-
-      // expand
-      stack.push(next - width) // up
-      stack.push(next + width) // down
-      if (next % width > 0) stack.push(next - 1) // left
-      if (next % width < width - 1) stack.push(next + 1) // right
-    }
-    set({ pixels })
-  },
   undo: () => {
     if (get().history.length === 0) return
 
