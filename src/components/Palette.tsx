@@ -1,5 +1,6 @@
 import { styled } from '@linaria/react'
 
+import { getLuminance } from '../lib/utils'
 import { useStore } from '../store'
 
 export function Palette() {
@@ -34,12 +35,9 @@ export function Palette() {
 }
 
 function getContrastColor(color: string): string {
-  const [r, g, b] = color
-    .match(/^#(..)(..)(..)$/)!
-    .slice(1)
-    .map(v => parseInt(v, 16))
-  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
-  return luminance > 128 ? 'var(--contrast-black)' : 'var(--contrast-white)'
+  return getLuminance(color) > 128
+    ? 'var(--contrast-black)'
+    : 'var(--contrast-white)'
 }
 
 const Container = styled.div`
