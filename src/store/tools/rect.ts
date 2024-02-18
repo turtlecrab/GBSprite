@@ -2,9 +2,12 @@ import { getLineByCoords, getPixelCoords } from '../../lib/utils'
 import { Getter, Setter } from '../store'
 
 export const rect = {
-  startDragging(index: number, set: Setter, get: Getter) {
-    get().setDragging(true)
-    set({ draggingFrom: index })
+  startDragging(index: number, set: Setter, _get: Getter) {
+    set({
+      dragging: true,
+      draggingFrom: index,
+      draft: [[index]],
+    })
   },
   hoverPixel(index: number, set: Setter, get: Getter) {
     if (!get().dragging || !get().draggingFrom) return
