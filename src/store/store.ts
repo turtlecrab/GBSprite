@@ -120,7 +120,10 @@ const initializer: StateCreator<State> = (set, get) => ({
   setDragging: dragging => set({ dragging }),
   setTool: tool => {
     if (get().dragging) return
-    set({ tool })
+    set({
+      tool,
+      draft: [],
+    })
   },
   setAltPressed: altPressed => set({ altPressed }),
   setShiftPressed: shiftPressed => {
