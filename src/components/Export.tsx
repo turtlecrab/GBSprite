@@ -13,14 +13,25 @@ export function Export() {
     const out = exportC(pixels, 'awesome_sprite')
     try {
       await navigator.clipboard.writeText(out)
-      console.log('copied to clipboard')
-    } catch {
-      console.error("couldn't copy to clipboard")
+    } catch (err) {
+      console.log(err)
     }
   }
 
   function downloadC() {
-    console.log('not implemented')
+    const pixels = useStore.getState().pixels
+    const out = exportC(pixels, 'awesome_sprite')
+    try {
+      const blob = new Blob([out], { type: 'text/plain' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = 'awesome_sprite.c'
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   async function copyPNG() {
