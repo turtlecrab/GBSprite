@@ -11,7 +11,7 @@ export const pencil = {
     if (!get().dragging && !get().shiftPressed) return
 
     if (!get().dragging && get().shiftPressed) {
-      if (!get().lastDrawnPixel) return
+      if (get().lastDrawnPixel === null) return
 
       // not dragging, shift pressed & has last drawn pixel -> line preview
       const width = get().width * get().tileSize
