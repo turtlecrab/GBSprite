@@ -32,6 +32,12 @@ const getStateSnapshot = (state: State): StateSnapshot => ({
 export type Setter = StoreApi<State>['setState']
 export type Getter = StoreApi<State>['getState']
 
+interface ExportSettings {
+  title: string
+  mode: '8x8' | '8x16'
+  scale: number
+}
+
 export interface State {
   palette: string[]
   tileSize: number
@@ -55,7 +61,9 @@ export interface State {
   previewZoomLevels: number[]
   gridVisible: boolean
   draft: number[][]
+  export: ExportSettings
 
+  setExport: (settings: Partial<ExportSettings>) => void
   setPalette: (palette: string[]) => void
   setColor: (color: number) => void
   setPixel: (index: number) => void
@@ -104,7 +112,13 @@ const initializer: StateCreator<State> = (set, get) => ({
   previewZoomLevels: [2, 4, 8, 16],
   gridVisible: false,
   draft: [],
+  export: {
+    title: 'awesome_sprite',
+    mode: '8x8',
+    scale: 4,
+  },
 
+  setExport: settings => set({ export: { ...get().export, ...settings } }),
   setPalette: palette => {
     if (!palette.every(color => /^#[\da-fA-F]{6}$/.test(color))) {
       console.error('error parsing palette')
@@ -321,6 +335,7 @@ export const useStore = create<State>()(
       pixels: state.pixels,
       color: state.color,
       zoom: state.zoom,
+      export: state.export,
     }),
   }),
 )

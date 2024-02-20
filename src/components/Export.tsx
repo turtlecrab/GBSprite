@@ -1,15 +1,20 @@
 import { RadioGroup } from '@headlessui/react'
 import { styled } from '@linaria/react'
-import { useState } from 'react'
 
 import { exportC } from '../lib/exportC'
 import { useStore } from '../store/store'
 
-export function Export() {
-  const [scale, setScale] = useState(1)
-  const [mode, setMode] = useState<'8x8' | '8x16'>('8x8')
+const DEFAULT_TITLE = 'awesome_sprite'
 
+export function Export() {
   const isEvenHeight = useStore(state => state.height % 2 === 0)
+  const scale = useStore(state => state.export.scale)
+  const mode = useStore(state => state.export.mode)
+  const title = useStore(state => state.export.title)
+  const setExport = useStore(state => state.setExport)
+
+  // forbid 8x16 export for sprite with odd rows
+  const adjustedMode = isEvenHeight ? mode : '8x8'
 
   async function copyC() {
     try {
@@ -25,7 +30,7 @@ export function Export() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'awesome_sprite.c'
+      a.download = `${title || DEFAULT_TITLE}.c`
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
@@ -52,7 +57,7 @@ export function Export() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'awesome_sprite.png'
+      a.download = `${title || DEFAULT_TITLE}.png`
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
@@ -63,9 +68,9 @@ export function Export() {
   function getCSource() {
     return exportC(
       useStore.getState().pixels,
-      'awesome_sprite',
+      title || DEFAULT_TITLE,
       useStore.getState().width,
-      mode,
+      adjustedMode,
     )
   }
 
@@ -108,55 +113,67 @@ export function Export() {
 
   return (
     <Container>
-      <li>
-        GBDK C file
-        <div>
-          Mode:{' '}
-          <Radio value={mode} onChange={setMode}>
-            <RadioGroup.Option value="8x8" as="button">
-              8x8
-            </RadioGroup.Option>
-            {isEvenHeight && (
-              <RadioGroup.Option value="8x16" as="button">
-                8x16
+      <br />
+      Title:{' '}
+      <input
+        type="text"
+        placeholder={DEFAULT_TITLE}
+        value={title}
+        onChange={e => setExport({ title: e.currentTarget.value })}
+      />
+      <ExportOptions>
+        <li>
+          GBDK C file
+          <div>
+            Mode:{' '}
+            <Radio value={adjustedMode} onChange={mode => setExport({ mode })}>
+              <RadioGroup.Option value="8x8" as="button">
+                8x8
               </RadioGroup.Option>
-            )}
-          </Radio>
-        </div>
-        <div>
-          <button onClick={copyC}>Copy to clipboard</button>
-          <button onClick={downloadC}>Download .c file</button>
-        </div>
-      </li>
-      <li>
-        PNG image
-        <div>
-          Scale:{' '}
-          <Radio value={scale} onChange={setScale}>
-            <RadioGroup.Option value={1} as="button">
-              1
-            </RadioGroup.Option>
-            <RadioGroup.Option value={2} as="button">
-              2
-            </RadioGroup.Option>
-            <RadioGroup.Option value={4} as="button">
-              4
-            </RadioGroup.Option>
-            <RadioGroup.Option value={8} as="button">
-              8
-            </RadioGroup.Option>
-          </Radio>
-        </div>
-        <div>
-          <button onClick={copyPNG}>Copy to clipboard</button>
-          <button onClick={downloadPNG}>Download .png file</button>
-        </div>
-      </li>
+              {isEvenHeight && (
+                <RadioGroup.Option value="8x16" as="button">
+                  8x16
+                </RadioGroup.Option>
+              )}
+            </Radio>
+          </div>
+          <div>
+            <button onClick={copyC}>Copy to clipboard</button>
+            <button onClick={downloadC}>Download .c file</button>
+          </div>
+        </li>
+        <li>
+          PNG image
+          <div>
+            Scale:{' '}
+            <Radio value={scale} onChange={scale => setExport({ scale })}>
+              <RadioGroup.Option value={1} as="button">
+                1
+              </RadioGroup.Option>
+              <RadioGroup.Option value={2} as="button">
+                2
+              </RadioGroup.Option>
+              <RadioGroup.Option value={4} as="button">
+                4
+              </RadioGroup.Option>
+              <RadioGroup.Option value={8} as="button">
+                8
+              </RadioGroup.Option>
+            </Radio>
+          </div>
+          <div>
+            <button onClick={copyPNG}>Copy to clipboard</button>
+            <button onClick={downloadPNG}>Download .png file</button>
+          </div>
+        </li>
+      </ExportOptions>
     </Container>
   )
 }
 
-const Container = styled.ul`
+const Container = styled.div``
+
+const ExportOptions = styled.ul`
   display: flex;
   flex-direction: column;
   gap: 16px;
