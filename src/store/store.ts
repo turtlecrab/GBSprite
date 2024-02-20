@@ -113,7 +113,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   gridVisible: false,
   draft: [],
   export: {
-    title: 'awesome_sprite',
+    title: '',
     mode: '8x8',
     scale: 4,
   },
