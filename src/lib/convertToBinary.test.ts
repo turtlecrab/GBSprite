@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { convertToBinary, numToHex } from './convertToBinary'
+import { convertToBinary, numToHex, pixelsToBinary } from './convertToBinary'
 
 /**
  * ████████████████
@@ -23,9 +23,9 @@ describe('convertToBinary', () => {
     expect(() => convertToBinary([])).toThrow()
   })
   it('converts 8 pixels to 2 bytes', () => {
-    expect(convertToBinary([0, 0, 0, 0, 0, 0, 0, 0])).toEqual([0, 0])
-    expect(convertToBinary([3, 3, 3, 3, 3, 3, 3, 3])).toEqual([255, 255])
-    expect(convertToBinary([0, 1, 2, 3, 0, 0, 3, 3])).toEqual([83, 51])
+    expect(pixelsToBinary([0, 0, 0, 0, 0, 0, 0, 0])).toEqual([0, 0])
+    expect(pixelsToBinary([3, 3, 3, 3, 3, 3, 3, 3])).toEqual([255, 255])
+    expect(pixelsToBinary([0, 1, 2, 3, 0, 0, 3, 3])).toEqual([83, 51])
   })
   it('converts 8x8 tile 💚', () => {
     expect(convertToBinary(heart)).toEqual([

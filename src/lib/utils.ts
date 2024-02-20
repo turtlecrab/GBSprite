@@ -159,3 +159,13 @@ export function getLuminance(color: string): number {
     .map(v => parseInt(v, 16))
   return 0.2126 * r + 0.7152 * g + 0.0722 * b
 }
+
+export function chunk<T>(array: T[], size: number): T[][] {
+  if (size < 1) throw new Error(`bad chunk size: ${size}`)
+
+  const result: T[][] = []
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size))
+  }
+  return result
+}

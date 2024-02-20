@@ -24,13 +24,18 @@ describe('exportC', () => {
   it('contains char array', () => {
     expect(result).toMatch(/const unsigned char heart\[\] =\n\{\n[\s\S]*\n\};/)
   })
+  it('contains constants', () => {
+    expect(result).toMatch(/#define heart_size 1/)
+    expect(result).toMatch(/#define heart_width 1/)
+    expect(result).toMatch(/#define heart_height 1/)
+  })
   it('contains proper data', () => {
     const data = result
       .match(/const unsigned char heart\[\] =\n\{\n([\s\S]*)\n\};/)?.[1]
       .replace(/\s/g, '')
       .split(',')
       .filter(el => el !== '')
-    // prettier ignore
+    // prettier-ignore
     expect(data).toEqual([
       '0x00', '0x00', '0x36', '0x7e', '0x7f', '0xc9', '0x7f', '0xc1',
       '0x7f', '0xc1', '0x3e', '0x62', '0x1c', '0x34', '0x08', '0x18',

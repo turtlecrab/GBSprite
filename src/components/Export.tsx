@@ -7,22 +7,21 @@ import { useStore } from '../store/store'
 
 export function Export() {
   const [scale, setScale] = useState(1)
+  const [mode, setMode] = useState<'8x8' | '8x16'>('8x8')
+
+  const isEvenHeight = useStore(state => state.height % 2 === 0)
 
   async function copyC() {
-    const pixels = useStore.getState().pixels
-    const out = exportC(pixels, 'awesome_sprite')
     try {
-      await navigator.clipboard.writeText(out)
+      await navigator.clipboard.writeText(getCSource())
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   }
 
   function downloadC() {
-    const pixels = useStore.getState().pixels
-    const out = exportC(pixels, 'awesome_sprite')
     try {
-      const blob = new Blob([out], { type: 'text/plain' })
+      const blob = new Blob([getCSource()], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -30,7 +29,7 @@ export function Export() {
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   }
 
@@ -42,7 +41,7 @@ export function Export() {
         new ClipboardItem({ 'image/png': blob }),
       ])
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
   }
 
@@ -57,8 +56,17 @@ export function Export() {
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
+  }
+
+  function getCSource() {
+    return exportC(
+      useStore.getState().pixels,
+      'awesome_sprite',
+      useStore.getState().width,
+      mode,
+    )
   }
 
   function getPNGBlob() {
@@ -102,47 +110,59 @@ export function Export() {
     <Container>
       <li>
         GBDK C file
-        <br />
-        <Button onClick={copyC}>Copy to clipboard</Button>
-        <Button onClick={downloadC}>Download c file</Button>
-        <br />
-        <br />
+        <div>
+          Mode:{' '}
+          <Radio value={mode} onChange={setMode}>
+            <RadioGroup.Option value="8x8" as="button">
+              8x8
+            </RadioGroup.Option>
+            {isEvenHeight && (
+              <RadioGroup.Option value="8x16" as="button">
+                8x16
+              </RadioGroup.Option>
+            )}
+          </Radio>
+        </div>
+        <div>
+          <button onClick={copyC}>Copy to clipboard</button>
+          <button onClick={downloadC}>Download .c file</button>
+        </div>
       </li>
       <li>
         PNG image
-        <br />
-        Scale:{' '}
-        <Scale value={scale} onChange={setScale}>
-          <RadioGroup.Option value={1} as="button">
-            1
-          </RadioGroup.Option>
-          <RadioGroup.Option value={2} as="button">
-            2
-          </RadioGroup.Option>
-          <RadioGroup.Option value={4} as="button">
-            4
-          </RadioGroup.Option>
-          <RadioGroup.Option value={8} as="button">
-            8
-          </RadioGroup.Option>
-        </Scale>
-        <br />
-        <Button onClick={copyPNG}>Copy to clipboard</Button>
-        <Button onClick={downloadPNG}>Download .png file</Button>
+        <div>
+          Scale:{' '}
+          <Radio value={scale} onChange={setScale}>
+            <RadioGroup.Option value={1} as="button">
+              1
+            </RadioGroup.Option>
+            <RadioGroup.Option value={2} as="button">
+              2
+            </RadioGroup.Option>
+            <RadioGroup.Option value={4} as="button">
+              4
+            </RadioGroup.Option>
+            <RadioGroup.Option value={8} as="button">
+              8
+            </RadioGroup.Option>
+          </Radio>
+        </div>
+        <div>
+          <button onClick={copyPNG}>Copy to clipboard</button>
+          <button onClick={downloadPNG}>Download .png file</button>
+        </div>
       </li>
     </Container>
   )
 }
 
 const Container = styled.ul`
-  //
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 `
 
-const Button = styled.button`
-  //
-`
-
-const Scale = styled(RadioGroup)`
+const Radio = styled(RadioGroup)`
   display: inline-flex;
 
   & > button {
