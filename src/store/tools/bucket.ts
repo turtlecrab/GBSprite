@@ -4,13 +4,29 @@ export const bucket = {
   startDragging(index: number, set: Setter, get: Getter) {
     get().pushStateToHistory()
 
-    this.floodFill(index, set, get)
+    if (get().toolSettings.continuousBucket) {
+      this.floodFill(index, set, get)
+    } else {
+      this.replaceColor(index, set, get)
+    }
+  },
+  replaceColor: (index: number, set: Setter, get: Getter) => {
+    const startColor = get().pixels[index]
+    const replaceColor = get().color
+
+    if (startColor === replaceColor) return
+
+    set({
+      pixels: get().pixels.map(p => (p === startColor ? replaceColor : p)),
+    })
   },
   floodFill: (index: number, set: Setter, get: Getter) => {
     const pixels = [...get().pixels]
     const width = get().width * get().tileSize
     const startColor = pixels[index]
     const replaceColor = get().color
+
+    if (startColor === replaceColor) return
 
     const visited = new Set<number>()
 

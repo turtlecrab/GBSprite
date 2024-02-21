@@ -35,9 +35,8 @@ export function ToolSettings() {
           <Checkbox
             value={toolSettings.continuousBucket}
             setValue={v => setToolSettings({ continuousBucket: v })}
-            disabled
           >
-            Continuous <br /> (not implemented)
+            Continuous
           </Checkbox>
         </>
       )}
