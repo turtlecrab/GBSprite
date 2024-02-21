@@ -85,6 +85,7 @@ export interface State {
   zoomOut: () => void
   setSize: (w: number, h: number) => void
   setPreviewZoom: (zoom: number) => void
+  changeZoom: (delta: number) => void
   setGridVisible: (gridVisible: boolean) => void
   toggleGridVisible: () => void
 }
@@ -264,6 +265,13 @@ const initializer: StateCreator<State> = (set, get) => ({
     set({ zoom: nextZoom })
   },
   setPreviewZoom: zoom => set({ previewZoom: zoom }),
+  changeZoom: delta =>
+    set({
+      zoom: Math.max(
+        get().zoomLevels[0],
+        Math.min(get().zoomLevels.at(-1)!, get().zoom - delta),
+      ),
+    }),
   setSize: (newWidth, newHeight) => {
     // TODO: add pivot points
     const state = get()

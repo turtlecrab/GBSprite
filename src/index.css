@@ -33,8 +33,3 @@ body {
   --contrast-black: var(--gray-9);
   --contrast-white: var(--gray-0);
 }
-
-#root {
-  width: fit-content;
-  margin-inline: auto;
-}

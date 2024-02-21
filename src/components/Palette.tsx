@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 
 import { getLuminance } from '../lib/utils'
 import { useStore } from '../store/store'
+import { PaletteList } from './PaletteList'
 
 export function Palette() {
   const palette = useStore(state => state.palette)
@@ -30,6 +31,9 @@ export function Palette() {
           {color === i && <SelectedMarker $color={getContrastColor(c)} />}
         </ColorButton>
       ))}
+      <Bottom>
+        <PaletteList />
+      </Bottom>
     </Container>
   )
 }
@@ -44,13 +48,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin: 0 12px;
 `
 
 const ColorButton = styled.button<{ $color: string }>`
   cursor: pointer;
   background-color: ${p => p.$color};
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border: 1px solid ${p => p.$color};
   border-radius: 4px;
   box-shadow: 2px 2px 0px lavender;
@@ -67,4 +72,11 @@ const SelectedMarker = styled.span<{ $color: string }>`
   top: -14px;
   left: -14px;
   transform: rotate(45deg);
+`
+
+const Bottom = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
 `

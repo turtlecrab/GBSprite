@@ -57,12 +57,14 @@ function PaletteItem(props: (typeof palettesData)[number]) {
 const Container = styled.div`
   position: relative;
   display: flex;
+  justify-self: end;
+  margin-bottom: 12px;
 
   & > button {
     cursor: pointer;
     background-color: white;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     border: 1px solid lavender;
     border-radius: 4px;
     box-shadow: 2px 2px 0px lavender;
@@ -78,8 +80,8 @@ const Container = styled.div`
     padding: 0;
     width: max-content;
     position: absolute;
-    right: 0;
-    top: 40px;
+    left: 48px;
+    bottom: 0;
     z-index: 10;
     background-color: #fff;
     display: flex;

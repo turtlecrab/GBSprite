@@ -33,11 +33,12 @@ export function Tabs() {
 }
 
 const Container = styled.div`
+  flex: 0 1 200px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  margin-top: 8px;
+  margin: 8px;
 `
 
 const TabButton = styled.button``

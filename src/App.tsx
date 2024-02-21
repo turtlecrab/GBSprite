@@ -15,15 +15,13 @@ export default function App() {
       <Top>
         <Header>GBSprite</Header>
         <ToolBar />
+        <Tools />
       </Top>
       <Group>
         <Palette />
-        <CanvasWrapper>
-          <Canvas />
-        </CanvasWrapper>
-        <Tools />
+        <Canvas />
+        <Tabs />
       </Group>
-      <Tabs />
     </Main>
   )
 }
@@ -31,31 +29,24 @@ export default function App() {
 const Main = styled.main`
   display: flex;
   flex-direction: column;
-  align-items: center;
-`
-
-const Header = styled.h1`
-  margin: 12px 0;
-  padding: 0;
-  color: #212529;
+  min-height: 100dvh;
 `
 
 const Top = styled.div`
   display: flex;
-  justify-content: center;
+  flex-wrap: wrap;
   align-items: center;
   gap: 32px;
-  margin: 0 0 8px;
+  row-gap: 0;
+  margin: 0 0 8px 12px;
 `
 
-const CanvasWrapper = styled.div`
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+const Header = styled.h1`
+  margin: 8px 0;
+  padding: 0;
 `
 
 const Group = styled.div`
+  flex: 1;
   display: flex;
-  gap: 8px;
 `

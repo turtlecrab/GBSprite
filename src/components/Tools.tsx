@@ -39,8 +39,8 @@ export function Tools() {
 
 const Container = styled.div`
   display: flex;
-  flex-direction: column;
   gap: 4px;
+  margin: 4px 0;
 `
 
 function Icon({ tool }: { tool: Tool }) {
@@ -55,8 +55,8 @@ function Icon({ tool }: { tool: Tool }) {
 const ToolButton = styled.button<{ $selected: boolean }>`
   cursor: pointer;
   background-color: ${p => (p.$selected ? 'orange' : 'white')};
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border: 1px solid lavender;
   border-radius: 4px;
   box-shadow: 2px 2px 0px lavender;

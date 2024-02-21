@@ -1,5 +1,5 @@
 import { styled } from '@linaria/react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { getPixelCoords } from '../lib/utils'
 import { useStore } from '../store/store'
@@ -22,6 +22,7 @@ export function Canvas() {
   const stopDragging = useStore(state => state.stopDragging)
   const hoverPixel = useStore(state => state.hoverPixel)
   const clearLastHoveredPixel = useStore(state => state.clearLastHoveredPixel)
+  const changeZoom = useStore(state => state.changeZoom)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const draftRef = useRef<HTMLCanvasElement>(null)
@@ -132,18 +133,85 @@ export function Canvas() {
     }
   }, [stopDragging])
 
+  const [left, setLeft] = useState(50)
+  const [top, setTop] = useState(50)
+
+  const contRef = useRef<HTMLDivElement>(null)
+
+  const [containerWidth, setContainerWidth] = useState(1)
+  const [containerHeight, setContainerHeight] = useState(1)
+
+  useEffect(() => {
+    if (!contRef.current) return
+    const cont = contRef.current
+
+    function updateContainerSize() {
+      setContainerWidth(cont.getBoundingClientRect().width)
+      setContainerHeight(cont.getBoundingClientRect().height)
+    }
+    updateContainerSize()
+
+    window.addEventListener('resize', updateContainerSize)
+    return () => {
+      window.removeEventListener('resize', updateContainerSize)
+    }
+  }, [])
+
+  const onWheel = useCallback(
+    (e: WheelEvent) => {
+      e.preventDefault()
+
+      if (e.ctrlKey) {
+        // TODO: how to distinguish mouse/touch wheel?
+        let factor = 0.1
+        if (Math.abs(e.deltaY) > 50) factor = 0.05
+        changeZoom(e.deltaY * factor)
+      } else {
+        const widthOnePercent = containerWidth / 100
+        const heightOnePercent = containerHeight / 100
+        setLeft(prev =>
+          Math.max(0, Math.min(100, prev - e.deltaX / widthOnePercent)),
+        )
+        setTop(prev =>
+          Math.max(0, Math.min(100, prev - e.deltaY / heightOnePercent)),
+        )
+      }
+    },
+    [changeZoom, containerHeight, containerWidth],
+  )
+
+  useEffect(() => {
+    if (!contRef.current) return
+    const cont = contRef.current
+
+    cont.addEventListener('wheel', onWheel, { passive: false })
+    return () => {
+      cont.removeEventListener('wheel', onWheel)
+    }
+  }, [onWheel])
+
   return (
-    <Container>
-      <MainCanvas
-        width={pixelWidth}
-        height={pixelHeight}
-        ref={canvasRef}
-        onPointerMove={pointerMove}
-        onPointerDown={pointerDown}
-        onPointerLeave={clearLastHoveredPixel}
-      />
-      <DraftCanvas width={pixelWidth} height={pixelHeight} ref={draftRef} />
-      {gridVisible && <TileGrid />}
+    <Container ref={contRef}>
+      <CanvasWrapper style={{ left: `${left}%`, top: `${top}%` }}>
+        <MainCanvas
+          width={pixelWidth}
+          height={pixelHeight}
+          ref={canvasRef}
+          onPointerMove={pointerMove}
+          onPointerDown={pointerDown}
+          onPointerLeave={clearLastHoveredPixel}
+        />
+        <DraftCanvas width={pixelWidth} height={pixelHeight} ref={draftRef} />
+        {gridVisible && <TileGrid />}
+      </CanvasWrapper>
+      <CenterButton
+        onClick={() => {
+          setLeft(50)
+          setTop(50)
+        }}
+      >
+        +
+      </CenterButton>
       <CanvasSideEffects />
     </Container>
   )
@@ -160,7 +228,15 @@ function getPointerPixelCoords(e: React.PointerEvent, w: number, h: number) {
 }
 
 const Container = styled.div`
+  background-color: var(--gray-1);
+  overflow: auto;
+  flex: 1;
   position: relative;
+`
+
+const CanvasWrapper = styled.div`
+  position: absolute;
+  transform: translate(-50%, -50%);
   display: flex;
   border: 1px solid lightgray;
 `
@@ -180,4 +256,12 @@ const DraftCanvas = styled.canvas<{ width: number; height: number }>`
 
   position: absolute;
   pointer-events: none;
+`
+
+const CenterButton = styled.button`
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  right: 4px;
+  bottom: 4px;
 `
