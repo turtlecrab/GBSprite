@@ -8,6 +8,7 @@ export const pencil = {
   },
 
   hoverPixel(index: number, set: Setter, get: Getter) {
+    if (index === get().lastHoveredPixel) return
     if (!get().dragging && !get().shiftPressed) return
 
     if (!get().dragging && get().shiftPressed) {

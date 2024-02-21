@@ -8,6 +8,7 @@ const cursors = {
   bucket: 'crosshair',
   rect: 'crosshair',
   ellipse: 'crosshair',
+  hand: 'grab',
 }
 
 /**
@@ -19,7 +20,7 @@ export function CanvasSideEffects() {
   const altPressed = useStore(state => state.altPressed)
   const zoom = useStore(state => state.zoom)
 
-  // cell cursor style
+  // canvas cursor style
   useEffect(() => {
     document.body.style.setProperty(
       '--canvas-cursor',

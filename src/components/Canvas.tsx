@@ -18,11 +18,15 @@ export function Canvas() {
   const altPressed = useStore(state => state.altPressed)
   const draft = useStore(state => state.draft)
   const tool = useStore(state => state.tool)
+  const canvasPos = useStore(state => state.canvasPos)
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
   const hoverPixel = useStore(state => state.hoverPixel)
   const clearLastHoveredPixel = useStore(state => state.clearLastHoveredPixel)
   const changeZoom = useStore(state => state.changeZoom)
+  const moveCanvasPos = useStore(state => state.moveCanvasPos)
+  const resetCanvasPos = useStore(state => state.resetCanvasPos)
+  const setContainer = useStore(state => state.setContainer)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const draftRef = useRef<HTMLCanvasElement>(null)
@@ -96,6 +100,7 @@ export function Canvas() {
     if (
       lastHoveredPixel !== null &&
       !altPressed &&
+      tool !== 'hand' &&
       (tool !== 'ellipse' || !draft.length)
     ) {
       const { x, y } = getPixelCoords(lastHoveredPixel, pixelWidth)
@@ -121,7 +126,7 @@ export function Canvas() {
 
   function pointerMove(e: React.PointerEvent) {
     const { x, y } = getPointerPixelCoords(e, pixelWidth, pixelHeight)
-    hoverPixel(y * pixelWidth + x)
+    hoverPixel(y * pixelWidth + x, e.movementX, e.movementY)
   }
 
   useEffect(() => {
@@ -133,21 +138,14 @@ export function Canvas() {
     }
   }, [stopDragging])
 
-  const [left, setLeft] = useState(50)
-  const [top, setTop] = useState(50)
-
   const contRef = useRef<HTMLDivElement>(null)
-
-  const [containerWidth, setContainerWidth] = useState(1)
-  const [containerHeight, setContainerHeight] = useState(1)
 
   useEffect(() => {
     if (!contRef.current) return
     const cont = contRef.current
 
     function updateContainerSize() {
-      setContainerWidth(cont.getBoundingClientRect().width)
-      setContainerHeight(cont.getBoundingClientRect().height)
+      setContainer(cont.getBoundingClientRect())
     }
     updateContainerSize()
 
@@ -155,7 +153,7 @@ export function Canvas() {
     return () => {
       window.removeEventListener('resize', updateContainerSize)
     }
-  }, [])
+  }, [setContainer])
 
   const onWheel = useCallback(
     (e: WheelEvent) => {
@@ -163,21 +161,16 @@ export function Canvas() {
 
       if (e.ctrlKey) {
         // TODO: how to distinguish mouse/touch wheel?
-        let factor = 0.1
-        if (Math.abs(e.deltaY) > 50) factor = 0.05
+        const factor = Math.abs(e.deltaY) > 50 ? 0.05 : 0.1
         changeZoom(e.deltaY * factor)
       } else {
-        const widthOnePercent = containerWidth / 100
-        const heightOnePercent = containerHeight / 100
-        setLeft(prev =>
-          Math.max(0, Math.min(100, prev - e.deltaX / widthOnePercent)),
-        )
-        setTop(prev =>
-          Math.max(0, Math.min(100, prev - e.deltaY / heightOnePercent)),
-        )
+        moveCanvasPos({
+          x: e.deltaX,
+          y: e.deltaY,
+        })
       }
     },
-    [changeZoom, containerHeight, containerWidth],
+    [changeZoom, moveCanvasPos],
   )
 
   useEffect(() => {
@@ -192,7 +185,9 @@ export function Canvas() {
 
   return (
     <Container ref={contRef}>
-      <CanvasWrapper style={{ left: `${left}%`, top: `${top}%` }}>
+      <CanvasWrapper
+        style={{ left: `${canvasPos.left}%`, top: `${canvasPos.top}%` }}
+      >
         <MainCanvas
           width={pixelWidth}
           height={pixelHeight}
@@ -204,14 +199,7 @@ export function Canvas() {
         <DraftCanvas width={pixelWidth} height={pixelHeight} ref={draftRef} />
         {gridVisible && <TileGrid />}
       </CanvasWrapper>
-      <CenterButton
-        onClick={() => {
-          setLeft(50)
-          setTop(50)
-        }}
-      >
-        +
-      </CenterButton>
+      <CenterButton onClick={resetCanvasPos}>+</CenterButton>
       <CanvasSideEffects />
     </Container>
   )

@@ -4,6 +4,7 @@ import { persist } from 'zustand/middleware'
 import { getLine, getPixelCoords } from '../lib/utils'
 import { bucket } from './tools/bucket'
 import { ellipse } from './tools/ellipse'
+import { hand } from './tools/hand'
 import { pencil } from './tools/pencil'
 import { rect } from './tools/rect'
 
@@ -13,7 +14,7 @@ const DEFAULT_HEIGHT = 1
 const DEFAULT_PIXELS_SIZE =
   DEFAULT_TILE_SIZE * DEFAULT_TILE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
-export type Tool = 'pencil' | 'bucket' | 'rect' | 'ellipse'
+export type Tool = 'pencil' | 'bucket' | 'rect' | 'ellipse' | 'hand'
 
 interface StateSnapshot {
   pixels: number[]
@@ -62,7 +63,12 @@ export interface State {
   gridVisible: boolean
   draft: number[][]
   export: ExportSettings
+  canvasPos: { left: number; top: number }
+  container: { width: number; height: number }
 
+  resetCanvasPos: () => void
+  moveCanvasPos: (pos: { x: number; y: number }) => void
+  setContainer: (size: Required<{ width: number; height: number }>) => void
   setExport: (settings: Partial<ExportSettings>) => void
   setPalette: (palette: string[]) => void
   setColor: (color: number) => void
@@ -73,7 +79,7 @@ export interface State {
   setShiftPressed: (value: boolean) => void
   setCtrlPressed: (value: boolean) => void
   startDragging: (index: number) => void
-  hoverPixel: (index: number) => void
+  hoverPixel: (index: number, dx: number, dy: number) => void
   stopDragging: () => void
   commitDraft: () => void
   pushStateToHistory: () => void
@@ -118,7 +124,22 @@ const initializer: StateCreator<State> = (set, get) => ({
     mode: '8x8',
     scale: 4,
   },
+  canvasPos: { left: 50, top: 50 },
+  container: { width: 0, height: 0 },
 
+  setContainer: size =>
+    set({ container: { width: size.width, height: size.height } }),
+  resetCanvasPos: () => set({ canvasPos: { left: 50, top: 50 } }),
+  moveCanvasPos: delta => {
+    const wp = get().container.width / 100
+    const hp = get().container.height / 100
+    set({
+      canvasPos: {
+        left: Math.max(0, Math.min(100, get().canvasPos.left - delta.x / wp)),
+        top: Math.max(0, Math.min(100, get().canvasPos.top - delta.y / hp)),
+      },
+    })
+  },
   setExport: settings => set({ export: { ...get().export, ...settings } }),
   setPalette: palette => {
     if (!palette.every(color => /^#[\da-fA-F]{6}$/.test(color))) {
@@ -189,11 +210,12 @@ const initializer: StateCreator<State> = (set, get) => ({
       case 'ellipse':
         ellipse.startDragging(index, set, get)
         break
+      case 'hand':
+        hand.startDragging(index, set, get)
+        break
     }
   },
-  hoverPixel: index => {
-    if (index === get().lastHoveredPixel) return
-
+  hoverPixel: (index, dx, dy) => {
     switch (get().tool) {
       case 'pencil':
         pencil.hoverPixel(index, set, get)
@@ -203,6 +225,9 @@ const initializer: StateCreator<State> = (set, get) => ({
         break
       case 'ellipse':
         ellipse.hoverPixel(index, set, get)
+        break
+      case 'hand':
+        hand.hoverPixel(dx, dy, set, get)
         break
     }
     set({ lastHoveredPixel: index })
@@ -344,6 +369,7 @@ export const useStore = create<State>()(
       color: state.color,
       zoom: state.zoom,
       export: state.export,
+      canvasPos: state.canvasPos,
     }),
   }),
 )
