@@ -11,7 +11,7 @@ export const rect = {
   },
   hoverPixel(index: number, set: Setter, get: Getter) {
     if (index === get().lastHoveredPixel) return
-    if (!get().dragging || !get().draggingFrom) return
+    if (!get().dragging || get().draggingFrom === null) return
 
     const width = get().width * get().tileSize
 
