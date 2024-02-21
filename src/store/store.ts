@@ -58,11 +58,15 @@ export interface State {
   redoHistory: StateSnapshot[]
   zoom: number
   zoomLevels: number[]
-  previewZoom: number
-  previewZoomLevels: number[]
   gridVisible: boolean
   draft: number[][]
   export: ExportSettings
+  previewSettings: {
+    zoom: number
+    zoomLevels: number[]
+    isPixelPerfect: boolean
+    isTiled: boolean
+  }
   canvasPos: { left: number; top: number }
   container: { width: number; height: number }
   toolSettings: {
@@ -72,6 +76,7 @@ export interface State {
     filledEllipse: boolean
   }
 
+  setPreviewSettings: (settings: Partial<State['previewSettings']>) => void
   setToolSettings: (settings: Partial<State['toolSettings']>) => void
   resetCanvasPos: () => void
   fitCanvas: () => void
@@ -98,7 +103,6 @@ export interface State {
   zoomIn: () => void
   zoomOut: () => void
   setSize: (w: number, h: number) => void
-  setPreviewZoom: (zoom: number) => void
   changeZoom: (delta: number) => void
   setGridVisible: (gridVisible: boolean) => void
   toggleGridVisible: () => void
@@ -123,10 +127,14 @@ const initializer: StateCreator<State> = (set, get) => ({
   redoHistory: [],
   zoom: 32,
   zoomLevels: [2, 4, 6, 8, 10, 12, 16, 24, 32, 48, 64, 96, 128],
-  previewZoom: 2,
-  previewZoomLevels: [2, 4, 8, 16],
   gridVisible: false,
   draft: [],
+  previewSettings: {
+    zoom: 2,
+    zoomLevels: [1, 2, 4, 8, 12],
+    isPixelPerfect: true,
+    isTiled: true,
+  },
   export: {
     title: '',
     mode: '8x8',
@@ -141,6 +149,8 @@ const initializer: StateCreator<State> = (set, get) => ({
     filledEllipse: false,
   },
 
+  setPreviewSettings: settings =>
+    set({ previewSettings: { ...get().previewSettings, ...settings } }),
   setToolSettings: settings =>
     set({ toolSettings: { ...get().toolSettings, ...settings } }),
   setContainer: size =>
@@ -148,12 +158,9 @@ const initializer: StateCreator<State> = (set, get) => ({
   resetCanvasPos: () => set({ canvasPos: { left: 50, top: 50 } }),
   fitCanvas: () => {
     get().resetCanvasPos()
-
     const hZoom = get().container.width / (get().width * get().tileSize)
     const vZoom = get().container.height / (get().height * get().tileSize)
-
     const zoom = Math.min(hZoom, vZoom)
-
     set({
       zoom: Math.max(
         get().zoomLevels[0],
@@ -320,7 +327,6 @@ const initializer: StateCreator<State> = (set, get) => ({
     const nextZoom = [...get().zoomLevels].reverse().find(v => v < get().zoom)
     set({ zoom: nextZoom })
   },
-  setPreviewZoom: zoom => set({ previewZoom: zoom }),
   changeZoom: delta =>
     set({
       zoom: Math.max(

@@ -10,10 +10,14 @@ export function Preview() {
   const tileHeight = useStore(state => state.height)
   const tileSize = useStore(state => state.tileSize)
   const palette = useStore(state => state.palette)
+  const zoom = useStore(state => state.previewSettings.zoom)
+  const zoomLevels = useStore(state => state.previewSettings.zoomLevels)
+  const isPixelPerfect = useStore(state => state.previewSettings.isPixelPerfect)
+  const isTiled = useStore(state => state.previewSettings.isTiled)
+  const setPreviewSettings = useStore(state => state.setPreviewSettings)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null)
-  const [isTiled, setIsTiled] = useState(true)
 
   const pixelWidth = tileSize * tileWidth
   const pixelHeight = tileSize * tileHeight
@@ -49,43 +53,32 @@ export function Preview() {
     }
   }, [ctx, pixels, pixelWidth, pixelHeight, palette, isTiled])
 
-  const previewZoom = useStore(state => state.previewZoom)
-  const setPreviewZoom = useStore(state => state.setPreviewZoom)
-  const previewZoomLevels = useStore(state => state.previewZoomLevels)
-
-  const [isPixelPerfect, setIsPixelPerfect] = useState(true)
   const [ratio, setRatio] = useState(window.devicePixelRatio)
 
-  const zoomFactor = previewZoom * (isPixelPerfect ? 1 / ratio : 1)
+  const zoomFactor = zoom * (isPixelPerfect ? 1 / ratio : 1)
 
   useEffect(() => {
-    function cb() {
+    function onResize() {
       setRatio(window.devicePixelRatio)
     }
-    window.addEventListener('resize', cb)
+    window.addEventListener('resize', onResize)
     return () => {
-      window.removeEventListener('resize', cb)
+      window.removeEventListener('resize', onResize)
     }
   }, [])
 
   return (
     <Container>
       <Controls>
-        {previewZoomLevels.map(n => (
+        {zoomLevels.map(n => (
           <button
-            onClick={() => setPreviewZoom(n)}
+            onClick={() => setPreviewSettings({ zoom: n })}
             key={n}
-            style={n === previewZoom ? { fontWeight: 'bold' } : {}}
+            style={n === zoom ? { fontWeight: 'bold' } : {}}
           >
             {n}x
           </button>
         ))}
-        <Checkbox value={isPixelPerfect} setValue={setIsPixelPerfect}>
-          Pixel-perfect
-        </Checkbox>
-        <Checkbox value={isTiled} setValue={setIsTiled}>
-          Tiled
-        </Checkbox>
       </Controls>
       <CanvasWrapper
         $width={pixelWidth * zoomFactor}
@@ -98,6 +91,20 @@ export function Preview() {
           ref={canvasRef}
         />
       </CanvasWrapper>
+      <Controls>
+        <Checkbox
+          value={isPixelPerfect}
+          setValue={v => setPreviewSettings({ isPixelPerfect: v })}
+        >
+          Pixel-perfect
+        </Checkbox>
+        <Checkbox
+          value={isTiled}
+          setValue={v => setPreviewSettings({ isTiled: v })}
+        >
+          Tiled
+        </Checkbox>
+      </Controls>
     </Container>
   )
 }
