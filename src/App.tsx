@@ -1,4 +1,5 @@
 import { styled } from '@linaria/react'
+import { Toaster } from 'react-hot-toast'
 
 import { Canvas } from './components/Canvas'
 import { Palette } from './components/Palette'
@@ -22,6 +23,7 @@ export default function App() {
         <Canvas />
         <Tabs />
       </Group>
+      <Toaster />
     </Main>
   )
 }

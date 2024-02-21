@@ -1,5 +1,6 @@
 import { RadioGroup } from '@headlessui/react'
 import { styled } from '@linaria/react'
+import toast from 'react-hot-toast'
 
 import { exportC } from '../lib/exportC'
 import { useStore } from '../store/store'
@@ -21,6 +22,7 @@ export function Export() {
       await navigator.clipboard.writeText(getCSource())
     } catch (err) {
       console.error(err)
+      toast.error(`Couldn't copy to the clipboard:\n\n${err}`)
     }
   }
 
@@ -47,6 +49,7 @@ export function Export() {
       ])
     } catch (err) {
       console.error(err)
+      toast.error(`Couldn't copy to the clipboard:\n\n${err}`)
     }
   }
 
