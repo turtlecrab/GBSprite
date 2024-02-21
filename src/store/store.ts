@@ -65,8 +65,16 @@ export interface State {
   export: ExportSettings
   canvasPos: { left: number; top: number }
   container: { width: number; height: number }
+  toolSettings: {
+    pixelPerfectPencil: boolean
+    continuousBucket: boolean
+    filledRect: boolean
+    filledEllipse: boolean
+  }
 
+  setToolSettings: (settings: Partial<State['toolSettings']>) => void
   resetCanvasPos: () => void
+  fitCanvas: () => void
   moveCanvasPos: (pos: { x: number; y: number }) => void
   setContainer: (size: Required<{ width: number; height: number }>) => void
   setExport: (settings: Partial<ExportSettings>) => void
@@ -126,10 +134,33 @@ const initializer: StateCreator<State> = (set, get) => ({
   },
   canvasPos: { left: 50, top: 50 },
   container: { width: 0, height: 0 },
+  toolSettings: {
+    pixelPerfectPencil: true,
+    continuousBucket: true,
+    filledRect: false,
+    filledEllipse: false,
+  },
 
+  setToolSettings: settings =>
+    set({ toolSettings: { ...get().toolSettings, ...settings } }),
   setContainer: size =>
     set({ container: { width: size.width, height: size.height } }),
   resetCanvasPos: () => set({ canvasPos: { left: 50, top: 50 } }),
+  fitCanvas: () => {
+    get().resetCanvasPos()
+
+    const hZoom = get().container.width / (get().width * get().tileSize)
+    const vZoom = get().container.height / (get().height * get().tileSize)
+
+    const zoom = Math.min(hZoom, vZoom)
+
+    set({
+      zoom: Math.max(
+        get().zoomLevels[0],
+        Math.min(get().zoomLevels.at(-1)!, zoom),
+      ),
+    })
+  },
   moveCanvasPos: delta => {
     const wp = get().container.width / 100
     const hp = get().container.height / 100

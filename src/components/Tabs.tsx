@@ -5,8 +5,10 @@ import { Debug } from './Debug'
 import { Export } from './Export'
 import { Preview } from './Preview'
 import { Settings } from './Settings'
+import { ToolSettings } from './ToolSettings'
 
 const tabs = [
+  { name: 'ToolSettings', component: ToolSettings },
   { name: 'Settings', component: Settings },
   { name: 'Export', component: Export },
   { name: 'Preview', component: Preview },
@@ -36,9 +38,8 @@ const Container = styled.div`
   flex: 0 1 200px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 8px;
-  margin: 8px;
+  margin: 0px 16px;
 `
 
 const TabButton = styled.button``

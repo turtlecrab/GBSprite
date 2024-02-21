@@ -11,18 +11,23 @@ export const pencil = {
     if (index === get().lastHoveredPixel) return
     if (!get().dragging && !get().shiftPressed) return
 
+    const pixelWidth = get().width * get().tileSize
+
     if (!get().dragging && get().shiftPressed) {
       if (get().lastDrawnPixel === null) return
 
       // not dragging, shift pressed & has last drawn pixel -> line preview
-      const width = get().width * get().tileSize
-      set({ draft: [getLine(get().lastDrawnPixel, index, width)] })
+      set({ draft: [getLine(get().lastDrawnPixel, index, pixelWidth)] })
       return
     }
 
-    // pixel-perfect pencil
-    const width = get().width * get().tileSize
-    const newLine = getLine(get().lastHoveredPixel, index, width)
+    const newLine = getLine(get().lastHoveredPixel, index, pixelWidth)
+
+    if (!get().toolSettings.pixelPerfectPencil) {
+      set({ draft: [...get().draft, newLine] })
+      return
+    }
+
     const prevLine = get().draft.at(-1)!
 
     if (prevLine.length < 2) throw new Error('bad segment')
@@ -30,7 +35,12 @@ export const pencil = {
     // check for └ ┘ ┌ ┐
     if (
       prevLine.at(-1)! === newLine[0] &&
-      arePixelsAtRightAngle(prevLine.at(-2)!, newLine[0], newLine[1], width)
+      arePixelsAtRightAngle(
+        prevLine.at(-2)!,
+        newLine[0],
+        newLine[1],
+        pixelWidth,
+      )
     ) {
       // shorten newLine,
       newLine.shift()

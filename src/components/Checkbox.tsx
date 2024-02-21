@@ -5,15 +5,17 @@ interface Props {
   value: boolean
   setValue: (v: boolean) => void
   children?: ReactNode
+  disabled?: boolean
 }
 
-export function Checkbox({ value, setValue, children }: Props) {
+export function Checkbox({ value, setValue, children, disabled }: Props) {
   return (
     <Label>
       <input
         type="checkbox"
         checked={value}
         onChange={e => setValue(e.currentTarget.checked)}
+        disabled={disabled}
       />
       {children}
     </Label>

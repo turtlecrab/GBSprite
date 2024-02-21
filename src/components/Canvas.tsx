@@ -217,7 +217,7 @@ function getPointerPixelCoords(e: React.PointerEvent, w: number, h: number) {
 
 const Container = styled.div`
   background-color: var(--gray-1);
-  overflow: auto;
+  overflow: hidden;
   flex: 1;
   position: relative;
 `
