@@ -1,12 +1,12 @@
 import { styled } from '@linaria/react'
-import { useEffect, useRef } from 'react'
+import { memo, useEffect, useRef } from 'react'
 
 import { useStore } from '../store/store'
 
 const EDGE_WIDTH = '2px'
 const EDGE_COLOR = 'blue'
 
-export function TileGrid() {
+export const TileGrid = memo(function TileGrid() {
   const width = useStore(state => state.width)
   const height = useStore(state => state.height)
 
@@ -48,7 +48,7 @@ export function TileGrid() {
       </Rows>
     </Container>
   )
-}
+})
 
 const Container = styled.div`
   pointer-events: none;
