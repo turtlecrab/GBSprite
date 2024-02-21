@@ -26,6 +26,7 @@ export function useHotkeys() {
           case 'KeyB': setTool('pencil'); break
           case 'KeyG': setTool('bucket'); break
           case 'KeyU': setTool('rect'); break
+          case 'KeyH': setTool('hand'); break
           case 'Equal': zoomIn(); break
           case 'Minus': zoomOut(); break
         }
