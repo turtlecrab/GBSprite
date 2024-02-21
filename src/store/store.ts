@@ -85,7 +85,6 @@ export interface State {
   setExport: (settings: Partial<ExportSettings>) => void
   setPalette: (palette: string[]) => void
   setColor: (color: number) => void
-  setPixel: (index: number) => void
   setDragging: (drag: boolean) => void
   setTool: (tool: Tool) => void
   setAltPressed: (value: boolean) => void
@@ -187,10 +186,6 @@ const initializer: StateCreator<State> = (set, get) => ({
     set({ palette })
   },
   setColor: color => set({ color }),
-  setPixel: index =>
-    set(state => ({
-      pixels: state.pixels.map((p, i) => (i === index ? state.color : p)),
-    })),
   setDragging: dragging => set({ dragging }),
   setTool: tool => {
     if (get().dragging) return
