@@ -269,7 +269,14 @@ const initializer: StateCreator<State> = (set, get) => ({
     if (!get().dragging) return
     get().setDragging(false)
 
-    get().commitDraft()
+    switch (get().tool) {
+      case 'rect':
+        rect.stopDragging(set, get)
+        break
+      default:
+        get().commitDraft()
+    }
+
     set({ draggingFrom: null })
   },
   commitDraft: () => {

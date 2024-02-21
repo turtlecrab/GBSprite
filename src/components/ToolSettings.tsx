@@ -45,9 +45,8 @@ export function ToolSettings() {
           <Checkbox
             value={toolSettings.filledRect}
             setValue={v => setToolSettings({ filledRect: v })}
-            disabled
           >
-            Filled (not implemented)
+            Filled
           </Checkbox>
         </>
       )}
