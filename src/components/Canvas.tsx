@@ -220,6 +220,7 @@ const Container = styled.div`
   overflow: hidden;
   flex: 1;
   position: relative;
+  touch-action: none;
 `
 
 const CanvasWrapper = styled.div`
