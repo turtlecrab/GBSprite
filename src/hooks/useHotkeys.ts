@@ -13,6 +13,7 @@ export function useHotkeys() {
   const zoomIn = useStore(state => state.zoomIn)
   const zoomOut = useStore(state => state.zoomOut)
   const toggleGridVisible = useStore(state => state.toggleGridVisible)
+  const fitCanvas = useStore(state => state.fitCanvas)
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -31,6 +32,9 @@ export function useHotkeys() {
           case 'Minus': zoomOut(); break
         }
       }
+
+      // Ctrl+0
+      if (e.code === 'Digit0' && e.ctrlKey) fitCanvas()
 
       // Shift+U
       if (e.code === 'KeyU' && e.shiftKey) setTool('ellipse')
@@ -98,5 +102,6 @@ export function useHotkeys() {
     setAltPressed,
     setShiftPressed,
     setCtrlPressed,
+    fitCanvas,
   ])
 }
