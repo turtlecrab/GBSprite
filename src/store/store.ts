@@ -79,8 +79,8 @@ export interface State {
   setPreviewSettings: (settings: Partial<State['previewSettings']>) => void
   setToolSettings: (settings: Partial<State['toolSettings']>) => void
   resetCanvasPos: () => void
-  fitCanvas: () => void
-  moveCanvasPos: (pos: { x: number; y: number }) => void
+  fitCanvas: (mode?: 'hor' | 'vert' | 'fit') => void
+  moveCanvasPos: (delta: { x: number; y: number }) => void
   setContainer: (size: Required<{ width: number; height: number }>) => void
   setExport: (settings: Partial<ExportSettings>) => void
   setPalette: (palette: string[]) => void
@@ -155,11 +155,12 @@ const initializer: StateCreator<State> = (set, get) => ({
   setContainer: size =>
     set({ container: { width: size.width, height: size.height } }),
   resetCanvasPos: () => set({ canvasPos: { left: 50, top: 50 } }),
-  fitCanvas: () => {
+  fitCanvas: (mode = 'fit') => {
     get().resetCanvasPos()
     const hZoom = get().container.width / (get().width * get().tileSize)
     const vZoom = get().container.height / (get().height * get().tileSize)
-    const zoom = Math.min(hZoom, vZoom)
+    const zoom =
+      mode === 'hor' ? hZoom : mode === 'vert' ? vZoom : Math.min(hZoom, vZoom)
     set({
       zoom: Math.max(
         get().zoomLevels[0],

@@ -62,7 +62,9 @@ export function ToolSettings() {
       )}
       {tool === 'hand' && (
         <>
-          <button onClick={fitCanvas}>Fit screen</button>
+          <button onClick={() => fitCanvas()}>Fit screen</button>
+          <button onClick={() => fitCanvas('hor')}>Fit width</button>
+          <button onClick={() => fitCanvas('vert')}>Fit height</button>
         </>
       )}
     </Container>

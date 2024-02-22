@@ -1,5 +1,6 @@
 import { styled } from '@linaria/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { LuScan } from 'react-icons/lu'
 
 import { getPixelCoords } from '../lib/utils'
 import { useStore } from '../store/store'
@@ -25,7 +26,7 @@ export function Canvas() {
   const clearLastHoveredPixel = useStore(state => state.clearLastHoveredPixel)
   const changeZoom = useStore(state => state.changeZoom)
   const moveCanvasPos = useStore(state => state.moveCanvasPos)
-  const resetCanvasPos = useStore(state => state.resetCanvasPos)
+  const fitCanvas = useStore(state => state.fitCanvas)
   const setContainer = useStore(state => state.setContainer)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -199,7 +200,9 @@ export function Canvas() {
         <DraftCanvas width={pixelWidth} height={pixelHeight} ref={draftRef} />
         {gridVisible && <TileGrid />}
       </CanvasWrapper>
-      <CenterButton onClick={resetCanvasPos}>+</CenterButton>
+      <CenterButton onClick={() => fitCanvas()}>
+        <LuScan size="100%" />
+      </CenterButton>
       <CanvasSideEffects />
     </Container>
   )
@@ -249,8 +252,17 @@ const DraftCanvas = styled.canvas<{ width: number; height: number }>`
 
 const CenterButton = styled.button`
   position: absolute;
-  width: 32px;
-  height: 32px;
-  right: 4px;
-  bottom: 4px;
+  right: 12px;
+  bottom: 12px;
+  cursor: pointer;
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  border: 1px solid lavender;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0px lavender;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
 `
