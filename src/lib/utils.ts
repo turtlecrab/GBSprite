@@ -108,10 +108,10 @@ function getLineHigh(
   return result
 }
 
-export function getPixelCoords(index: number, width: number) {
+export function getPixelCoords(index: number, pixelWidth: number) {
   return {
-    x: index % width,
-    y: (index - (index % width)) / width,
+    x: index % pixelWidth,
+    y: Math.floor(index / pixelWidth),
   }
 }
 
