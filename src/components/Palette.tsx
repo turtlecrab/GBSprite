@@ -7,7 +7,9 @@ import { PaletteList } from './PaletteList'
 export function Palette() {
   const palette = useStore(state => state.palette)
   const color = useStore(state => state.color)
+  const bgColor = useStore(state => state.bgColor)
   const setColor = useStore(state => state.setColor)
+  const setBGColor = useStore(state => state.setBGColor)
   const fillCanvas = useStore(state => state.fillCanvas)
 
   function handleButtonClick(e: React.MouseEvent, i: number) {
@@ -15,7 +17,8 @@ export function Palette() {
       fillCanvas(i)
       e.preventDefault()
     } else {
-      setColor(i)
+      if (e.button === 0) setColor(i)
+      else if (e.button === 2) setBGColor(i)
     }
   }
 
@@ -24,11 +27,13 @@ export function Palette() {
       {palette.map((c, i) => (
         <ColorButton
           $color={c}
-          onClick={e => handleButtonClick(e, i)}
+          onPointerDown={e => handleButtonClick(e, i)}
           aria-label={'Color #' + i}
           key={i}
+          onContextMenu={e => e.preventDefault()}
         >
           {color === i && <SelectedMarker $color={getContrastColor(c)} />}
+          {bgColor === i && <SelectedBGMarker $color={getContrastColor(c)} />}
         </ColorButton>
       ))}
       <Bottom>
@@ -69,8 +74,19 @@ const SelectedMarker = styled.span<{ $color: string }>`
   display: block;
   width: 24px;
   height: 24px;
-  top: -14px;
-  left: -14px;
+  top: -12px;
+  left: -12px;
+  transform: rotate(45deg);
+`
+
+const SelectedBGMarker = styled.span<{ $color: string }>`
+  position: absolute;
+  background-color: ${p => p.$color};
+  display: block;
+  width: 24px;
+  height: 24px;
+  bottom: -14px;
+  right: -14px;
   transform: rotate(45deg);
 `
 

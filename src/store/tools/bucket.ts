@@ -1,18 +1,27 @@
 import { Getter, MouseButton, Setter } from '../store'
 
 export const bucket = {
-  startDragging(index: number, _button: MouseButton, set: Setter, get: Getter) {
+  startDragging(index: number, button: MouseButton, set: Setter, get: Getter) {
     get().pushStateToHistory()
 
+    const replaceColor =
+      button === 'right'
+        ? get().bgColor || get().palette.length - 1
+        : get().color
+
     if (get().toolSettings.continuousBucket) {
-      this.floodFill(index, set, get)
+      this.floodFill(index, replaceColor, set, get)
     } else {
-      this.replaceColor(index, set, get)
+      this.replaceColor(index, replaceColor, set, get)
     }
   },
-  replaceColor: (index: number, set: Setter, get: Getter) => {
+  replaceColor: (
+    index: number,
+    replaceColor: number,
+    set: Setter,
+    get: Getter,
+  ) => {
     const startColor = get().pixels[index]
-    const replaceColor = get().color
 
     if (startColor === replaceColor) return
 
@@ -20,11 +29,15 @@ export const bucket = {
       pixels: get().pixels.map(p => (p === startColor ? replaceColor : p)),
     })
   },
-  floodFill: (index: number, set: Setter, get: Getter) => {
+  floodFill: (
+    index: number,
+    replaceColor: number,
+    set: Setter,
+    get: Getter,
+  ) => {
     const pixels = [...get().pixels]
     const width = get().width * get().tileSize
     const startColor = pixels[index]
-    const replaceColor = get().color
 
     if (startColor === replaceColor) return
 

@@ -47,6 +47,7 @@ export interface State {
   height: number // of tiles
   pixels: number[]
   color: number
+  bgColor: number | null
   tool: Tool
   dragging: MouseButton | null
   draggingFrom: number | null
@@ -86,6 +87,7 @@ export interface State {
   setExport: (settings: Partial<ExportSettings>) => void
   setPalette: (palette: string[]) => void
   setColor: (color: number) => void
+  setBGColor: (color: number) => void
   setTool: (tool: Tool) => void
   setAltPressed: (value: boolean) => void
   setShiftPressed: (value: boolean) => void
@@ -114,6 +116,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   height: DEFAULT_HEIGHT,
   pixels: Array(DEFAULT_PIXELS_SIZE).fill(0),
   color: 3,
+  bgColor: null,
   tool: 'pencil',
   dragging: null,
   draggingFrom: null,
@@ -187,6 +190,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     set({ palette })
   },
   setColor: color => set({ color }),
+  setBGColor: bgColor => set({ bgColor }),
   setTool: tool => {
     if (get().dragging) return
     set({
@@ -233,6 +237,9 @@ const initializer: StateCreator<State> = (set, get) => ({
       hand.startDragging(index, button, set, get)
       return
     }
+    if (button === 'right' && get().bgColor === null)
+      set({ bgColor: get().palette.length - 1 })
+
     // prettier-ignore
     switch (get().tool) {
       case 'pencil': pencil.startDragging(index, button, set, get); break
@@ -259,7 +266,6 @@ const initializer: StateCreator<State> = (set, get) => ({
   },
   stopDragging: () => {
     if (!get().dragging) return
-    set({ dragging: null })
 
     // prettier-ignore
     switch (get().tool) {
@@ -269,6 +275,7 @@ const initializer: StateCreator<State> = (set, get) => ({
         get().commitDraft()
     }
 
+    set({ dragging: null })
     set({ draggingFrom: null })
   },
   commitDraft: () => {
@@ -276,7 +283,10 @@ const initializer: StateCreator<State> = (set, get) => ({
 
     get().pushStateToHistory()
     const draftSet = new Set(get().draft.flat())
-    const color = get().color
+    const color =
+      get().dragging === 'right'
+        ? get().bgColor || get().palette.length - 1
+        : get().color
     set({
       draft: [],
       pixels: get().pixels.map((pixel, i) => (draftSet.has(i) ? color : pixel)),

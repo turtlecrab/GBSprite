@@ -15,6 +15,8 @@ export function Canvas() {
   const palette = useStore(state => state.palette)
   const gridVisible = useStore(state => state.gridVisible)
   const color = useStore(state => state.color)
+  const bgColor = useStore(state => state.bgColor)
+  const dragging = useStore(state => state.dragging)
   const lastHoveredPixel = useStore(state => state.lastHoveredPixel)
   const altPressed = useStore(state => state.altPressed)
   const draft = useStore(state => state.draft)
@@ -90,7 +92,10 @@ export function Canvas() {
 
     draftCtx.clearRect(0, 0, pixelWidth, pixelHeight)
 
-    draftCtx.fillStyle = palette[color]
+    draftCtx.fillStyle =
+      dragging === 'right'
+        ? palette[bgColor || palette.length - 1]
+        : palette[color]
 
     new Set(draft.flat()).forEach(p => {
       const { x, y } = getPixelCoords(p, pixelWidth)
