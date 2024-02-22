@@ -229,39 +229,22 @@ const initializer: StateCreator<State> = (set, get) => ({
       get().setColor(get().pixels[index])
       return
     }
-
+    // prettier-ignore
     switch (get().tool) {
-      case 'pencil':
-        pencil.startDragging(index, set, get)
-        break
-      case 'bucket':
-        bucket.startDragging(index, set, get)
-        break
-      case 'rect':
-        rect.startDragging(index, set, get)
-        break
-      case 'ellipse':
-        ellipse.startDragging(index, set, get)
-        break
-      case 'hand':
-        hand.startDragging(index, set, get)
-        break
+      case 'pencil': pencil.startDragging(index, set, get); break
+      case 'bucket': bucket.startDragging(index, set, get); break
+      case 'rect': rect.startDragging(index, set, get); break
+      case 'ellipse': ellipse.startDragging(index, set, get); break
+      case 'hand': hand.startDragging(index, set, get); break
     }
   },
   hoverPixel: (index, dx, dy) => {
+    // prettier-ignore
     switch (get().tool) {
-      case 'pencil':
-        pencil.hoverPixel(index, set, get)
-        break
-      case 'rect':
-        rect.hoverPixel(index, set, get)
-        break
-      case 'ellipse':
-        ellipse.hoverPixel(index, set, get)
-        break
-      case 'hand':
-        hand.hoverPixel(dx, dy, set, get)
-        break
+      case 'pencil': pencil.hoverPixel(index, set, get); break
+      case 'rect': rect.hoverPixel(index, set, get); break
+      case 'ellipse': ellipse.hoverPixel(index, set, get); break
+      case 'hand': hand.hoverPixel(dx, dy, set, get); break
     }
     set({ lastHoveredPixel: index })
   },
@@ -269,10 +252,10 @@ const initializer: StateCreator<State> = (set, get) => ({
     if (!get().dragging) return
     get().setDragging(false)
 
+    // prettier-ignore
     switch (get().tool) {
-      case 'rect':
-        rect.stopDragging(set, get)
-        break
+      case 'rect': rect.stopDragging(set, get); break
+      case 'ellipse': ellipse.stopDragging(set, get); break
       default:
         get().commitDraft()
     }

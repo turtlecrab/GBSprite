@@ -1,4 +1,4 @@
-import { getPixelCoords } from '../../lib/utils'
+import { getLine, getPixelCoords } from '../../lib/utils'
 import { Getter, Setter } from '../store'
 
 export const ellipse = {
@@ -20,14 +20,44 @@ export const ellipse = {
 
     set({ draft: [plotEllipseRect(x0, y0, x1, y1, width)] })
   },
+  stopDragging(set: Setter, get: Getter) {
+    if (!get().toolSettings.filledEllipse) {
+      get().commitDraft()
+      return
+    }
+    const pixelWidth = get().width * get().tileSize
+
+    const map = new Map<number, [number, number]>()
+
+    for (let index of get().draft.flat()) {
+      const y = Math.floor(index / pixelWidth)
+
+      if (map.has(y)) {
+        const value = map.get(y)!
+        if (index < value[0]) value[0] = index
+        if (index > value[1]) value[1] = index
+      } else {
+        map.set(y, [index, index])
+      }
+    }
+
+    const filledDraft = []
+
+    for (let [min, max] of map.values()) {
+      filledDraft.push(getLine(min, max, pixelWidth))
+    }
+
+    set({ draft: filledDraft })
+    get().commitDraft()
+    set({ lastDrawnPixel: null })
+  },
 }
 
 /**
  * http://members.chello.at/easyfilter/bresenham.html#ellipse
  */
 // TODO:
-// - width 1-4,6: add top/bottom pixels?
-// - filled version
+// - width 1-6: add top/bottom pixels?
 function plotEllipseRect(
   x0: number,
   y0: number,

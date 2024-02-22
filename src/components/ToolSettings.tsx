@@ -55,9 +55,8 @@ export function ToolSettings() {
           <Checkbox
             value={toolSettings.filledEllipse}
             setValue={v => setToolSettings({ filledEllipse: v })}
-            disabled
           >
-            Filled (not implemented)
+            Filled
           </Checkbox>
         </>
       )}
