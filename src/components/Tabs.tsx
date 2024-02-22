@@ -1,6 +1,10 @@
 import { styled } from '@linaria/react'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
+import { LuWrench } from 'react-icons/lu'
+import { Drawer } from 'vaul'
 
+import { breakpoints } from '../breakpoints'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import { Debug } from './Debug'
 import { Export } from './Export'
 import { Preview } from './Preview'
@@ -18,10 +22,13 @@ const tabs = [
 export function Tabs() {
   const [tab, setTab] = useState(0)
 
+  const isMobile = !useMediaQuery(breakpoints.md)
+
   const TabComponent = tabs[tab].component
+  const ContainerComponent = isMobile ? Vaul : Container
 
   return (
-    <Container>
+    <ContainerComponent>
       <div>
         {tabs.map(({ name }, i) => (
           <TabButton key={i} onClick={() => setTab(i)}>
@@ -30,7 +37,21 @@ export function Tabs() {
         ))}
       </div>
       <TabComponent />
-    </Container>
+    </ContainerComponent>
+  )
+}
+
+function Vaul(props: { children: ReactNode }) {
+  return (
+    <Drawer.Root>
+      <Trigger>
+        <LuWrench size="100%" />
+      </Trigger>
+      <Drawer.Portal>
+        <Overlay />
+        <Content>{props.children}</Content>
+      </Drawer.Portal>
+    </Drawer.Root>
   )
 }
 
@@ -40,6 +61,46 @@ const Container = styled.div`
   flex-direction: column;
   gap: 8px;
   margin: 0px 16px;
+`
+
+const Trigger = styled(Drawer.Trigger)`
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+  cursor: pointer;
+  background-color: white;
+  width: 40px;
+  height: 40px;
+  border: 1px solid lavender;
+  border-radius: 4px;
+  box-shadow: 2px 2px 0px lavender;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+`
+
+const Overlay = styled(Drawer.Overlay)`
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: #21252980;
+`
+
+const Content = styled(Drawer.Content)`
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 60%;
+  background-color: white;
+  padding: 12px;
 `
 
 const TabButton = styled.button``
