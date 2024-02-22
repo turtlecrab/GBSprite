@@ -1,10 +1,12 @@
 import { arePixelsAtRightAngle, getLine } from '../../lib/utils'
-import { Getter, Setter } from '../store'
+import { Getter, MouseButton, Setter } from '../store'
 
 export const pencil = {
-  startDragging(index: number, set: Setter, get: Getter) {
-    get().setDragging(true)
-    set({ draft: [...get().draft, [index, index]] })
+  startDragging(index: number, button: MouseButton, set: Setter, get: Getter) {
+    set({
+      dragging: button,
+      draft: [...get().draft, [index, index]],
+    })
   },
 
   hoverPixel(index: number, set: Setter, get: Getter) {

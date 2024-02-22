@@ -15,6 +15,7 @@ const DEFAULT_PIXELS_SIZE =
   DEFAULT_TILE_SIZE * DEFAULT_TILE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
 export type Tool = 'pencil' | 'bucket' | 'rect' | 'ellipse' | 'hand'
+export type MouseButton = 'left' | 'right' | 'middle'
 
 interface StateSnapshot {
   pixels: number[]
@@ -47,7 +48,7 @@ export interface State {
   pixels: number[]
   color: number
   tool: Tool
-  dragging: boolean
+  dragging: MouseButton | null
   draggingFrom: number | null
   lastHoveredPixel: number | null
   lastDrawnPixel: number | null
@@ -85,12 +86,11 @@ export interface State {
   setExport: (settings: Partial<ExportSettings>) => void
   setPalette: (palette: string[]) => void
   setColor: (color: number) => void
-  setDragging: (drag: boolean) => void
   setTool: (tool: Tool) => void
   setAltPressed: (value: boolean) => void
   setShiftPressed: (value: boolean) => void
   setCtrlPressed: (value: boolean) => void
-  startDragging: (index: number) => void
+  startDragging: (index: number, button: MouseButton) => void
   hoverPixel: (index: number, dx: number, dy: number) => void
   stopDragging: () => void
   commitDraft: () => void
@@ -115,7 +115,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   pixels: Array(DEFAULT_PIXELS_SIZE).fill(0),
   color: 3,
   tool: 'pencil',
-  dragging: false,
+  dragging: null,
   draggingFrom: null,
   lastHoveredPixel: null,
   lastDrawnPixel: null,
@@ -187,7 +187,6 @@ const initializer: StateCreator<State> = (set, get) => ({
     set({ palette })
   },
   setColor: color => set({ color }),
-  setDragging: dragging => set({ dragging }),
   setTool: tool => {
     if (get().dragging) return
     set({
@@ -225,21 +224,30 @@ const initializer: StateCreator<State> = (set, get) => ({
     set(state => ({ pixels: state.pixels.map(_ => color) }))
   },
 
-  startDragging: index => {
+  startDragging: (index, button) => {
     if (get().altPressed) {
       get().setColor(get().pixels[index])
       return
     }
+    if (button === 'middle') {
+      hand.startDragging(index, button, set, get)
+      return
+    }
     // prettier-ignore
     switch (get().tool) {
-      case 'pencil': pencil.startDragging(index, set, get); break
-      case 'bucket': bucket.startDragging(index, set, get); break
-      case 'rect': rect.startDragging(index, set, get); break
-      case 'ellipse': ellipse.startDragging(index, set, get); break
-      case 'hand': hand.startDragging(index, set, get); break
+      case 'pencil': pencil.startDragging(index, button, set, get); break
+      case 'bucket': bucket.startDragging(index, button, set, get); break
+      case 'rect': rect.startDragging(index, button, set, get); break
+      case 'ellipse': ellipse.startDragging(index, button, set, get); break
+      case 'hand': hand.startDragging(index, button, set, get); break
     }
   },
   hoverPixel: (index, dx, dy) => {
+    if (get().dragging === 'middle') {
+      hand.hoverPixel(dx, dy, set, get)
+      set({ lastHoveredPixel: index })
+      return
+    }
     // prettier-ignore
     switch (get().tool) {
       case 'pencil': pencil.hoverPixel(index, set, get); break
@@ -251,7 +259,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   },
   stopDragging: () => {
     if (!get().dragging) return
-    get().setDragging(false)
+    set({ dragging: null })
 
     // prettier-ignore
     switch (get().tool) {

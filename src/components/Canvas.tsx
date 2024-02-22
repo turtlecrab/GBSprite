@@ -121,8 +121,11 @@ export function Canvas() {
 
   function pointerDown(e: React.PointerEvent) {
     e.preventDefault()
+    if (e.button < 0 || e.button > 2) return
+    const button = (['left', 'middle', 'right'] as const)[e.button]
+
     const { x, y } = getPointerPixelCoords(e, pixelWidth, pixelHeight)
-    startDragging(y * pixelWidth + x)
+    startDragging(y * pixelWidth + x, button)
   }
 
   function pointerMove(e: React.PointerEvent) {
@@ -185,7 +188,7 @@ export function Canvas() {
   }, [onWheel])
 
   return (
-    <Container ref={contRef}>
+    <Container ref={contRef} onContextMenu={e => e.preventDefault()}>
       <CanvasWrapper
         style={{ left: `${canvasPos.left}%`, top: `${canvasPos.top}%` }}
       >

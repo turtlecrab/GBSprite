@@ -19,17 +19,25 @@ export function CanvasSideEffects() {
   const tool = useStore(state => state.tool)
   const altPressed = useStore(state => state.altPressed)
   const zoom = useStore(state => state.zoom)
+  const isHandDrag = useStore(
+    state =>
+      state.dragging === 'middle' || (state.tool === 'hand' && state.dragging),
+  )
 
   // canvas cursor style
   useEffect(() => {
     document.body.style.setProperty(
       '--canvas-cursor',
-      altPressed ? cursors['eyeDropper'] : cursors[tool],
+      altPressed
+        ? cursors['eyeDropper']
+        : isHandDrag
+          ? 'grabbing'
+          : cursors[tool],
     )
     return () => {
       document.body.style.removeProperty('--canvas-cursor')
     }
-  }, [altPressed, tool])
+  }, [altPressed, isHandDrag, tool])
 
   // pixel scale
   useEffect(() => {

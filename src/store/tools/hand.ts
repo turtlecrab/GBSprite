@@ -1,9 +1,14 @@
-import { Getter, Setter } from '../store'
+import { Getter, MouseButton, Setter } from '../store'
 
 export const hand = {
-  startDragging(_index: number, set: Setter, _get: Getter) {
+  startDragging(
+    _index: number,
+    button: MouseButton,
+    set: Setter,
+    _get: Getter,
+  ) {
     set({
-      dragging: true,
+      dragging: button,
     })
   },
   hoverPixel(dx: number, dy: number, _set: Setter, get: Getter) {

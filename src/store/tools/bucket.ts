@@ -1,7 +1,7 @@
-import { Getter, Setter } from '../store'
+import { Getter, MouseButton, Setter } from '../store'
 
 export const bucket = {
-  startDragging(index: number, set: Setter, get: Getter) {
+  startDragging(index: number, _button: MouseButton, set: Setter, get: Getter) {
     get().pushStateToHistory()
 
     if (get().toolSettings.continuousBucket) {

@@ -1,10 +1,10 @@
 import { getLine, getPixelCoords } from '../../lib/utils'
-import { Getter, Setter } from '../store'
+import { Getter, MouseButton, Setter } from '../store'
 
 export const ellipse = {
-  startDragging(index: number, set: Setter, _get: Getter) {
+  startDragging(index: number, button: MouseButton, set: Setter, _get: Getter) {
     set({
-      dragging: true,
+      dragging: button,
       draggingFrom: index,
       draft: [[index]],
     })
