@@ -238,7 +238,8 @@ const initializer: StateCreator<State> = (set, get) => ({
       hand.startDragging(index, button, set, get)
       return
     }
-    if (button === 'right' && get().bgColor === null) set({ bgColor: 0 })
+    if (button === 'right' && get().bgColor === null && get().tool !== 'hand')
+      set({ bgColor: 0 })
 
     // prettier-ignore
     switch (get().tool) {
