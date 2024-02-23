@@ -34,12 +34,6 @@ const getStateSnapshot = (state: State): StateSnapshot => ({
 export type Setter = StoreApi<State>['setState']
 export type Getter = StoreApi<State>['getState']
 
-interface ExportSettings {
-  title: string
-  mode: '8x8' | '8x16'
-  scale: number
-}
-
 export interface State {
   palette: string[]
   tileSize: number
@@ -62,7 +56,11 @@ export interface State {
   zoomLevels: number[]
   gridVisible: boolean
   draft: number[][]
-  export: ExportSettings
+  exportSettings: {
+    title: string
+    mode: '8x8' | '8x16'
+    scale: number
+  }
   previewSettings: {
     zoom: number
     zoomLevels: number[]
@@ -84,7 +82,7 @@ export interface State {
   fitCanvas: (mode?: 'hor' | 'vert' | 'fit') => void
   moveCanvasPos: (delta: { x: number; y: number }) => void
   setContainer: (size: Required<{ width: number; height: number }>) => void
-  setExport: (settings: Partial<ExportSettings>) => void
+  setExportSettings: (settings: Partial<State['exportSettings']>) => void
   setPalette: (palette: string[]) => void
   setColor: (color: number) => void
   setBGColor: (color: number) => void
@@ -137,7 +135,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     isPixelPerfect: true,
     isTiled: true,
   },
-  export: {
+  exportSettings: {
     title: '',
     mode: '8x8',
     scale: 4,
@@ -181,7 +179,8 @@ const initializer: StateCreator<State> = (set, get) => ({
       },
     })
   },
-  setExport: settings => set({ export: { ...get().export, ...settings } }),
+  setExportSettings: settings =>
+    set({ exportSettings: { ...get().exportSettings, ...settings } }),
   setPalette: palette => {
     if (!palette.every(color => /^#[\da-fA-F]{6}$/.test(color))) {
       console.error('error parsing palette')
@@ -407,7 +406,7 @@ export const useStore = create<State>()(
       pixels: state.pixels,
       color: state.color,
       zoom: state.zoom,
-      export: state.export,
+      exportSettings: state.exportSettings,
       canvasPos: state.canvasPos,
     }),
   }),

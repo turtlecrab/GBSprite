@@ -9,10 +9,10 @@ const DEFAULT_TITLE = 'awesome_sprite'
 
 export function Export() {
   const isEvenHeight = useStore(state => state.height % 2 === 0)
-  const scale = useStore(state => state.export.scale)
-  const mode = useStore(state => state.export.mode)
-  const title = useStore(state => state.export.title)
-  const setExport = useStore(state => state.setExport)
+  const scale = useStore(state => state.exportSettings.scale)
+  const mode = useStore(state => state.exportSettings.mode)
+  const title = useStore(state => state.exportSettings.title)
+  const setExportSettings = useStore(state => state.setExportSettings)
 
   // forbid 8x16 export for sprite with odd rows
   const adjustedMode = isEvenHeight ? mode : '8x8'
@@ -122,14 +122,17 @@ export function Export() {
         type="text"
         placeholder={DEFAULT_TITLE}
         value={title}
-        onChange={e => setExport({ title: e.currentTarget.value })}
+        onChange={e => setExportSettings({ title: e.currentTarget.value })}
       />
       <ExportOptions>
         <li>
           GBDK C file
           <div>
             Mode:{' '}
-            <Radio value={adjustedMode} onChange={mode => setExport({ mode })}>
+            <Radio
+              value={adjustedMode}
+              onChange={mode => setExportSettings({ mode })}
+            >
               <RadioGroup.Option value="8x8" as="button">
                 8x8
               </RadioGroup.Option>
@@ -149,7 +152,10 @@ export function Export() {
           PNG image
           <div>
             Scale:{' '}
-            <Radio value={scale} onChange={scale => setExport({ scale })}>
+            <Radio
+              value={scale}
+              onChange={scale => setExportSettings({ scale })}
+            >
               <RadioGroup.Option value={1} as="button">
                 1
               </RadioGroup.Option>
