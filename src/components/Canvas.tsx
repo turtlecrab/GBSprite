@@ -151,16 +151,15 @@ export function Canvas() {
 
   useEffect(() => {
     if (!contRef.current) return
-    const cont = contRef.current
+    const container = contRef.current
 
-    function updateContainerSize() {
-      setContainer(cont.getBoundingClientRect())
-    }
-    updateContainerSize()
+    const observer = new ResizeObserver(() => {
+      setContainer(container.getBoundingClientRect())
+    })
 
-    window.addEventListener('resize', updateContainerSize)
+    observer.observe(container)
     return () => {
-      window.removeEventListener('resize', updateContainerSize)
+      observer.disconnect()
     }
   }, [setContainer])
 
