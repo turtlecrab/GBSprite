@@ -4,6 +4,7 @@ import { LuMaximize2 } from 'react-icons/lu'
 
 import { getPixelCoords } from '../lib/utils'
 import { Tool, useStore } from '../store/store'
+import { IconButton } from './IconButton'
 import { TileGrid } from './TileGrid'
 
 export function Canvas() {
@@ -274,19 +275,8 @@ const DraftCanvas = styled.canvas<{ width: number; height: number }>`
   pointer-events: none;
 `
 
-const FitCanvasButton = styled.button`
+const FitCanvasButton = styled(IconButton)`
   position: absolute;
   right: 12px;
   bottom: 12px;
-  cursor: pointer;
-  background-color: white;
-  width: 40px;
-  height: 40px;
-  border: 1px solid lavender;
-  border-radius: 4px;
-  box-shadow: 2px 2px 0px lavender;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: inherit;
 `

@@ -8,6 +8,7 @@ import {
 } from 'react-icons/lu'
 
 import { Tool, useStore } from '../store/store'
+import { IconButton } from './IconButton'
 
 const icons = {
   pencil: LuPencil,
@@ -39,36 +40,21 @@ export function Tools() {
   )
 }
 
-const Container = styled.div`
-  display: flex;
-  gap: 4px;
-  margin: 4px 0;
-`
-
 function Icon({ tool }: { tool: Tool }) {
   if (!(tool in icons)) {
     console.error('bad icon name')
     return <>😦</>
   }
   const Comp = icons[tool]
-  return <Comp size="100%" />
+  return <Comp />
 }
 
-const ToolButton = styled.button<{ $selected: boolean }>`
-  cursor: pointer;
-  background-color: ${p => (p.$selected ? 'orange' : 'white')};
-  width: 40px;
-  height: 40px;
-  border: 1px solid lavender;
-  border-radius: 4px;
-  box-shadow: 2px 2px 0px lavender;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: inherit;
+const Container = styled.div`
+  display: flex;
+  gap: 4px;
+  margin: 4px 0;
+`
 
-  &:disabled {
-    cursor: not-allowed;
-    color: lavender;
-  }
+const ToolButton = styled(IconButton)<{ $selected: boolean }>`
+  background-color: ${p => (p.$selected ? 'orange' : 'white')};
 `

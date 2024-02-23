@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 import { LuRedo2, LuUndo2, LuZoomIn, LuZoomOut } from 'react-icons/lu'
 
 import { useStore } from '../store/store'
+import { IconButton } from './IconButton'
 
 export function ToolBar() {
   const undo = useStore(state => state.undo)
@@ -16,18 +17,18 @@ export function ToolBar() {
 
   return (
     <Container>
-      <Button onClick={undo} disabled={!canUndo}>
-        <LuUndo2 size="100%" />
-      </Button>
-      <Button onClick={redo} disabled={!canRedo}>
-        <LuRedo2 size="100%" />
-      </Button>
-      <Button onClick={zoomIn} disabled={zoom >= zoomLevels.at(-1)!}>
-        <LuZoomIn size="100%" />
-      </Button>
-      <Button onClick={zoomOut} disabled={zoom <= zoomLevels[0]}>
-        <LuZoomOut size="100%" />
-      </Button>
+      <IconButton onClick={undo} disabled={!canUndo}>
+        <LuUndo2 />
+      </IconButton>
+      <IconButton onClick={redo} disabled={!canRedo}>
+        <LuRedo2 />
+      </IconButton>
+      <IconButton onClick={zoomIn} disabled={zoom >= zoomLevels.at(-1)!}>
+        <LuZoomIn />
+      </IconButton>
+      <IconButton onClick={zoomOut} disabled={zoom <= zoomLevels[0]}>
+        <LuZoomOut />
+      </IconButton>
     </Container>
   )
 }
@@ -37,23 +38,4 @@ const Container = styled.div`
   align-items: center;
   gap: 4px;
   margin: 4px 0;
-`
-
-const Button = styled.button`
-  cursor: pointer;
-  background-color: white;
-  width: 40px;
-  height: 40px;
-  border: 1px solid lavender;
-  border-radius: 4px;
-  box-shadow: 2px 2px 0px lavender;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: inherit;
-
-  &:disabled {
-    cursor: not-allowed;
-    color: lavender;
-  }
 `

@@ -6,6 +6,7 @@ import { shallow } from 'zustand/shallow'
 
 import { getLuminance } from '../lib/utils'
 import { useStore } from '../store/store'
+import { IconButton } from './IconButton'
 
 export function PaletteList() {
   const palette = useStore(state => state.palette)
@@ -23,8 +24,8 @@ export function PaletteList() {
   return (
     <Container>
       <Listbox value={selected} onChange={handleChange}>
-        <Listbox.Button>
-          <LuPalette size="100%" />
+        <Listbox.Button as={IconButton}>
+          <LuPalette />
         </Listbox.Button>
         <Listbox.Options>
           {palettesData.map((p, i) => (
@@ -59,20 +60,6 @@ const Container = styled.div`
   display: flex;
   justify-self: end;
   margin-bottom: 12px;
-
-  & > button {
-    cursor: pointer;
-    background-color: white;
-    width: 40px;
-    height: 40px;
-    border: 1px solid lavender;
-    border-radius: 4px;
-    box-shadow: 2px 2px 0px lavender;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: inherit;
-  }
 
   & > ul {
     list-style: none;

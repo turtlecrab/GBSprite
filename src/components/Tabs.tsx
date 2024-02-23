@@ -7,6 +7,7 @@ import { breakpoints } from '../breakpoints'
 import { useMediaQuery } from '../hooks/useMediaQuery'
 import { Debug } from './Debug'
 import { Export } from './Export'
+import { IconButton } from './IconButton'
 import { Preview } from './Preview'
 import { Settings } from './Settings'
 import { ToolSettings } from './ToolSettings'
@@ -44,9 +45,9 @@ export function Tabs() {
 function Vaul(props: { children: ReactNode }) {
   return (
     <Drawer.Root>
-      <Trigger>
-        <LuWrench size="100%" />
-      </Trigger>
+      <IconButton as={Trigger}>
+        <LuWrench />
+      </IconButton>
       <Drawer.Portal>
         <Overlay />
         <Content>{props.children}</Content>
@@ -68,17 +69,6 @@ const Trigger = styled(Drawer.Trigger)`
   left: 50%;
   transform: translateX(-50%);
   bottom: 12px;
-  cursor: pointer;
-  background-color: white;
-  width: 40px;
-  height: 40px;
-  border: 1px solid lavender;
-  border-radius: 4px;
-  box-shadow: 2px 2px 0px lavender;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: inherit;
 `
 
 const Overlay = styled(Drawer.Overlay)`
