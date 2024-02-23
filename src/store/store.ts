@@ -237,8 +237,7 @@ const initializer: StateCreator<State> = (set, get) => ({
       hand.startDragging(index, button, set, get)
       return
     }
-    if (button === 'right' && get().bgColor === null)
-      set({ bgColor: get().palette.length - 1 })
+    if (button === 'right' && get().bgColor === null) set({ bgColor: 0 })
 
     // prettier-ignore
     switch (get().tool) {
@@ -283,10 +282,7 @@ const initializer: StateCreator<State> = (set, get) => ({
 
     get().pushStateToHistory()
     const draftSet = new Set(get().draft.flat())
-    const color =
-      get().dragging === 'right'
-        ? get().bgColor || get().palette.length - 1
-        : get().color
+    const color = get().dragging === 'right' ? get().bgColor ?? 0 : get().color
     set({
       draft: [],
       pixels: get().pixels.map((pixel, i) => (draftSet.has(i) ? color : pixel)),

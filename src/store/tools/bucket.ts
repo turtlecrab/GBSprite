@@ -4,10 +4,7 @@ export const bucket = {
   startDragging(index: number, button: MouseButton, set: Setter, get: Getter) {
     get().pushStateToHistory()
 
-    const replaceColor =
-      button === 'right'
-        ? get().bgColor || get().palette.length - 1
-        : get().color
+    const replaceColor = button === 'right' ? get().bgColor ?? 0 : get().color
 
     if (get().toolSettings.continuousBucket) {
       this.floodFill(index, replaceColor, set, get)

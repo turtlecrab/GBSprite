@@ -93,9 +93,7 @@ export function Canvas() {
     draftCtx.clearRect(0, 0, pixelWidth, pixelHeight)
 
     draftCtx.fillStyle =
-      dragging === 'right'
-        ? palette[bgColor || palette.length - 1]
-        : palette[color]
+      dragging === 'right' ? palette[bgColor ?? 0] : palette[color]
 
     new Set(draft.flat()).forEach(p => {
       const { x, y } = getPixelCoords(p, pixelWidth)
@@ -122,6 +120,8 @@ export function Canvas() {
     draft,
     altPressed,
     tool,
+    dragging,
+    bgColor,
   ])
 
   function pointerDown(e: React.PointerEvent) {
