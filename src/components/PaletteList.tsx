@@ -24,9 +24,9 @@ export function PaletteList() {
   return (
     <Container>
       <Listbox value={selected} onChange={handleChange}>
-        <Listbox.Button as={IconButton}>
+        <IconButton as={Listbox.Button}>
           <LuPalette />
-        </Listbox.Button>
+        </IconButton>
         <Listbox.Options>
           {palettesData.map((p, i) => (
             <Listbox.Option key={i} value={i}>
