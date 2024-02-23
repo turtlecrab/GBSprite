@@ -1,6 +1,6 @@
 import { styled } from '@linaria/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { LuScan } from 'react-icons/lu'
+import { LuMaximize2 } from 'react-icons/lu'
 
 import { getPixelCoords } from '../lib/utils'
 import { useStore } from '../store/store'
@@ -209,7 +209,7 @@ export function Canvas() {
         {gridVisible && <TileGrid />}
       </CanvasWrapper>
       <CenterButton onClick={() => fitCanvas()}>
-        <LuScan size="100%" />
+        <LuMaximize2 size="100%" />
       </CenterButton>
       <CanvasSideEffects />
     </Container>
