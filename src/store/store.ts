@@ -229,8 +229,9 @@ const initializer: StateCreator<State> = (set, get) => ({
   },
 
   startDragging: (index, button) => {
-    if (get().altPressed) {
-      get().setColor(get().pixels[index])
+    if (get().altPressed && button !== 'middle') {
+      if (button === 'left') set({ color: get().pixels[index] })
+      else set({ bgColor: get().pixels[index] })
       return
     }
     if (button === 'middle') {
