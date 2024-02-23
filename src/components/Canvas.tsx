@@ -3,8 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { LuMaximize2 } from 'react-icons/lu'
 
 import { getPixelCoords } from '../lib/utils'
-import { useStore } from '../store/store'
-import { CanvasSideEffects } from './CanvasSideEffects'
+import { Tool, useStore } from '../store/store'
 import { TileGrid } from './TileGrid'
 
 export function Canvas() {
@@ -22,6 +21,7 @@ export function Canvas() {
   const draft = useStore(state => state.draft)
   const tool = useStore(state => state.tool)
   const canvasPos = useStore(state => state.canvasPos)
+  const zoom = useStore(state => state.zoom)
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
   const hoverPixel = useStore(state => state.hoverPixel)
@@ -195,7 +195,14 @@ export function Canvas() {
   return (
     <Container ref={contRef} onContextMenu={e => e.preventDefault()}>
       <CanvasWrapper
-        style={{ left: `${canvasPos.left}%`, top: `${canvasPos.top}%` }}
+        style={
+          {
+            left: `${canvasPos.left}%`,
+            top: `${canvasPos.top}%`,
+            '--pixel-size': `${zoom}px`,
+            cursor: getCursor(altPressed, dragging, tool),
+          } as React.CSSProperties
+        }
       >
         <MainCanvas
           width={pixelWidth}
@@ -208,10 +215,9 @@ export function Canvas() {
         <DraftCanvas width={pixelWidth} height={pixelHeight} ref={draftRef} />
         {gridVisible && <TileGrid />}
       </CanvasWrapper>
-      <CenterButton onClick={() => fitCanvas()}>
+      <FitCanvasButton onClick={() => fitCanvas()}>
         <LuMaximize2 size="100%" />
-      </CenterButton>
-      <CanvasSideEffects />
+      </FitCanvasButton>
     </Container>
   )
 }
@@ -224,6 +230,19 @@ function getPointerPixelCoords(e: React.PointerEvent, w: number, h: number) {
   const y = Math.max(0, Math.floor(((e.clientY - rect.top) / rect.height) * h))
 
   return { x, y }
+}
+
+const cursors = {
+  pencil: 'crosshair',
+  bucket: 'crosshair',
+  rect: 'crosshair',
+  ellipse: 'crosshair',
+  hand: 'grab',
+}
+
+function getCursor(altPressed: boolean, dragging: string | null, tool: Tool) {
+  const isHandDrag = dragging === 'middle' || (tool === 'hand' && dragging)
+  return altPressed ? 'alias' : isHandDrag ? 'grabbing' : cursors[tool]
 }
 
 const Container = styled.div`
@@ -245,8 +264,6 @@ const MainCanvas = styled.canvas<{ width: number; height: number }>`
   image-rendering: pixelated;
   width: calc(${p => p.width} * var(--pixel-size));
   height: calc(${p => p.height} * var(--pixel-size));
-
-  cursor: var(--canvas-cursor);
 `
 
 const DraftCanvas = styled.canvas<{ width: number; height: number }>`
@@ -258,7 +275,7 @@ const DraftCanvas = styled.canvas<{ width: number; height: number }>`
   pointer-events: none;
 `
 
-const CenterButton = styled.button`
+const FitCanvasButton = styled.button`
   position: absolute;
   right: 12px;
   bottom: 12px;
