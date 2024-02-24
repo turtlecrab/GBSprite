@@ -332,7 +332,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     set({
       zoom: Math.max(
         get().zoomLevels[0],
-        Math.min(get().zoomLevels.at(-1)!, get().zoom - delta),
+        Math.min(get().zoomLevels.at(-1)!, get().zoom * Math.exp(-delta / 10)),
       ),
     }),
   setSize: (newWidth, newHeight) => {
