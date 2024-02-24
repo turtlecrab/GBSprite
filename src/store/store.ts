@@ -130,7 +130,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   zoom: 32,
   zoomLevels: [2, 4, 6, 8, 10, 12, 16, 24, 32, 48, 64, 96, 128],
   gridVisible: false,
-  tooltipsVisible: true, // TODO: detect touch device, false on touch
+  tooltipsVisible: !window.matchMedia('(pointer: coarse)').matches,
   draft: [],
   previewSettings: {
     zoom: 2,
