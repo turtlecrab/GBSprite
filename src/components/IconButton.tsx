@@ -1,6 +1,20 @@
 import { styled } from '@linaria/react'
 
-export const IconButton = styled.button`
+import { TooltipPosition, getTooltipProps } from '../tooltips'
+
+type Props = React.ComponentProps<typeof Button> & {
+  tooltip?: string
+  tooltipPos?: TooltipPosition
+}
+
+export function IconButton(props: Props) {
+  const { tooltip, tooltipPos, ...buttonProps } = props
+  const tooltipProps = tooltip ? getTooltipProps(tooltip, tooltipPos) : {}
+
+  return <Button {...buttonProps} {...tooltipProps} />
+}
+
+const Button = styled.button`
   cursor: pointer;
   color: inherit;
   background-color: white;

@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 
 import { getLuminance } from '../lib/utils'
 import { useStore } from '../store/store'
+import { getTooltipProps, tooltips } from '../tooltips'
 import { PaletteList } from './PaletteList'
 
 export function Palette() {
@@ -25,16 +26,17 @@ export function Palette() {
   return (
     <Container>
       {palette.map((c, i) => (
-        <ColorButton
-          $color={c}
-          onPointerDown={e => handleButtonClick(e, i)}
-          aria-label={'Color #' + i}
-          key={i}
-          onContextMenu={e => e.preventDefault()}
-        >
-          {color === i && <SelectedMarker $color={getContrastColor(c)} />}
-          {bgColor === i && <SelectedBGMarker $color={getContrastColor(c)} />}
-        </ColorButton>
+        <div key={i} {...getTooltipProps(tooltips.colorSwatch(i), 'right')}>
+          <ColorButton
+            $color={c}
+            onPointerDown={e => handleButtonClick(e, i)}
+            aria-label={'Color #' + i}
+            onContextMenu={e => e.preventDefault()}
+          >
+            {color === i && <SelectedMarker $color={getContrastColor(c)} />}
+            {bgColor === i && <SelectedBGMarker $color={getContrastColor(c)} />}
+          </ColorButton>
+        </div>
       ))}
       <Bottom>
         <PaletteList />
@@ -66,6 +68,7 @@ const ColorButton = styled.button<{ $color: string }>`
   box-shadow: 2px 2px 0px lavender;
   position: relative;
   overflow: hidden;
+  display: flex;
 `
 
 const SelectedMarker = styled.span<{ $color: string }>`

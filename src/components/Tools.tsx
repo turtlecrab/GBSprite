@@ -8,6 +8,7 @@ import {
 } from 'react-icons/lu'
 
 import { Tool, useStore } from '../store/store'
+import { tooltips } from '../tooltips'
 import { IconButton } from './IconButton'
 
 const icons = {
@@ -29,9 +30,10 @@ export function Tools() {
       {tools.map(t => (
         <ToolButton
           $selected={tool === t}
-          onClick={() => setTool(t as Tool)}
+          onClick={() => setTool(t)}
           aria-label={t}
           key={t}
+          tooltip={tooltips[t]}
         >
           <Icon tool={t as Tool} />
         </ToolButton>

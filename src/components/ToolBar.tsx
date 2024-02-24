@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 import { LuRedo2, LuUndo2, LuZoomIn, LuZoomOut } from 'react-icons/lu'
 
 import { useStore } from '../store/store'
+import { tooltips } from '../tooltips'
 import { IconButton } from './IconButton'
 
 export function ToolBar() {
@@ -17,16 +18,24 @@ export function ToolBar() {
 
   return (
     <Container>
-      <IconButton onClick={undo} disabled={!canUndo}>
+      <IconButton onClick={undo} disabled={!canUndo} tooltip={tooltips.undo}>
         <LuUndo2 />
       </IconButton>
-      <IconButton onClick={redo} disabled={!canRedo}>
+      <IconButton onClick={redo} disabled={!canRedo} tooltip={tooltips.redo}>
         <LuRedo2 />
       </IconButton>
-      <IconButton onClick={zoomIn} disabled={zoom >= zoomLevels.at(-1)!}>
+      <IconButton
+        onClick={zoomIn}
+        disabled={zoom >= zoomLevels.at(-1)!}
+        tooltip={tooltips.zoomIn}
+      >
         <LuZoomIn />
       </IconButton>
-      <IconButton onClick={zoomOut} disabled={zoom <= zoomLevels[0]}>
+      <IconButton
+        onClick={zoomOut}
+        disabled={zoom <= zoomLevels[0]}
+        tooltip={tooltips.zoomOut}
+      >
         <LuZoomOut />
       </IconButton>
     </Container>

@@ -32,4 +32,16 @@ body {
 
   --contrast-black: var(--gray-9);
   --contrast-white: var(--gray-0);
+
+  --balloon-color: var(--gray-8);
+  --balloon-text-color: var(--gray-0);
+  --balloon-shadow: 2px 2px 4px hsla(210, 11%, 15%, 0.3);
+}
+
+[aria-label][data-balloon-pos]::after {
+  white-space: pre;
+  text-align: left;
+  font-family: monospace;
+  font-size: 16px;
+  box-shadow: var(--balloon-shadow);
 }
