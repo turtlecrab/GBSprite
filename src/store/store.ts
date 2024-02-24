@@ -343,6 +343,8 @@ const initializer: StateCreator<State> = (set, get) => ({
     const state = get()
     if (newWidth === state.width && newHeight === state.height) return
 
+    const fillColor = get().bgColor ?? 0
+
     const newPixels: number[] = []
 
     const oldPixelWidth = state.width * state.tileSize
@@ -363,7 +365,7 @@ const initializer: StateCreator<State> = (set, get) => ({
 
         newPixels.push(
           ...state.pixels.slice(offset, offset + oldPixelWidth),
-          ...Array(newPixelWidth - oldPixelWidth).fill(0),
+          ...Array(newPixelWidth - oldPixelWidth).fill(fillColor),
         )
       }
     }
@@ -371,7 +373,9 @@ const initializer: StateCreator<State> = (set, get) => ({
       // add pixels at the bottom
       const remainingPixelHeight = (newHeight - state.height) * state.tileSize
 
-      newPixels.push(...Array(remainingPixelHeight * newPixelWidth).fill(0))
+      newPixels.push(
+        ...Array(remainingPixelHeight * newPixelWidth).fill(fillColor),
+      )
     }
 
     // offset last drawn pixel position
