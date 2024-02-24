@@ -55,6 +55,7 @@ export interface State {
   zoom: number
   zoomLevels: number[]
   gridVisible: boolean
+  tooltipsVisible: boolean
   draft: number[][]
   exportSettings: {
     title: string
@@ -104,6 +105,7 @@ export interface State {
   setSize: (w: number, h: number) => void
   changeZoom: (delta: number) => void
   setGridVisible: (gridVisible: boolean) => void
+  setTooltipsVisible: (visible: boolean) => void
   toggleGridVisible: () => void
 }
 
@@ -128,6 +130,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   zoom: 32,
   zoomLevels: [2, 4, 6, 8, 10, 12, 16, 24, 32, 48, 64, 96, 128],
   gridVisible: false,
+  tooltipsVisible: true, // TODO: detect touch device, false on touch
   draft: [],
   previewSettings: {
     zoom: 2,
@@ -393,6 +396,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     set(resizedState)
   },
   setGridVisible: gridVisible => set({ gridVisible }),
+  setTooltipsVisible: tooltipsVisible => set({ tooltipsVisible }),
   toggleGridVisible: () => set({ gridVisible: !get().gridVisible }),
 })
 
@@ -408,6 +412,7 @@ export const useStore = create<State>()(
       zoom: state.zoom,
       exportSettings: state.exportSettings,
       canvasPos: state.canvasPos,
+      tooltipsVisible: state.tooltipsVisible,
     }),
   }),
 )

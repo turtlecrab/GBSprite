@@ -45,3 +45,8 @@ body {
   font-size: 16px;
   box-shadow: var(--balloon-shadow);
 }
+
+.no-tooltips [aria-label][data-balloon-pos]::after,
+.no-tooltips [aria-label][data-balloon-pos]::before {
+  display: none;
+}

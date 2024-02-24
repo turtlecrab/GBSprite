@@ -7,12 +7,15 @@ import { Tabs } from './components/Tabs'
 import { ToolBar } from './components/ToolBar'
 import { Tools } from './components/Tools'
 import { useHotkeys } from './hooks/useHotkeys'
+import { useStore } from './store/store'
 
 export default function App() {
   useHotkeys()
 
+  const tooltipsVisible = useStore(state => state.tooltipsVisible)
+
   return (
-    <Main>
+    <Main className={tooltipsVisible ? '' : 'no-tooltips'}>
       <Top>
         <Header>GBSprite</Header>
         <ToolBar />

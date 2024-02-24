@@ -24,12 +24,17 @@ export function Settings() {
   }
 
   const gridVisible = useStore(state => state.gridVisible)
+  const tooltipsVisible = useStore(state => state.tooltipsVisible)
   const setGridVisible = useStore(state => state.setGridVisible)
+  const setTooltipsVisible = useStore(state => state.setTooltipsVisible)
   const fillCanvas = useStore(state => state.fillCanvas)
 
   return (
     <Container>
       <h2>Settings</h2>
+      <Checkbox value={tooltipsVisible} setValue={setTooltipsVisible}>
+        Show tooltips
+      </Checkbox>
       <Checkbox value={gridVisible} setValue={setGridVisible}>
         Show tile grid
       </Checkbox>
