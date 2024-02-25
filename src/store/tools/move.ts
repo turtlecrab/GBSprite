@@ -36,10 +36,12 @@ function getOffsetImage(
 ): number[] {
   const offsetImage: number[] = []
 
-  for (let y = 0; y < width; y++) {
+  const height = image.length / width
+
+  for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
       const prevX = (x - offset.x + width) % width
-      const prevY = (y - offset.y + width) % width
+      const prevY = (y - offset.y + height) % height
       const prevIndex = prevX + prevY * width
 
       offsetImage.push(image[prevIndex])
