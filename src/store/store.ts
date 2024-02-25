@@ -1,7 +1,7 @@
 import { StateCreator, StoreApi, create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-import { getLine, getPixelCoords } from '../lib/utils'
+import { clamp, getLine, getPixelCoords } from '../lib/utils'
 import { bucket } from './tools/bucket'
 import { ellipse } from './tools/ellipse'
 import { hand } from './tools/hand'
@@ -171,10 +171,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     const zoom =
       mode === 'hor' ? hZoom : mode === 'vert' ? vZoom : Math.min(hZoom, vZoom)
     set({
-      zoom: Math.max(
-        get().zoomLevels[0],
-        Math.min(get().zoomLevels.at(-1)!, zoom),
-      ),
+      zoom: clamp(get().zoomLevels[0], get().zoomLevels.at(-1)!, zoom),
     })
   },
   moveCanvasPos: delta => {
@@ -182,8 +179,8 @@ const initializer: StateCreator<State> = (set, get) => ({
     const hp = get().container.height / 100
     set({
       canvasPos: {
-        left: Math.max(0, Math.min(100, get().canvasPos.left - delta.x / wp)),
-        top: Math.max(0, Math.min(100, get().canvasPos.top - delta.y / hp)),
+        left: clamp(0, 100, get().canvasPos.left - delta.x / wp),
+        top: clamp(0, 100, get().canvasPos.top - delta.y / hp),
       },
     })
   },
@@ -341,9 +338,10 @@ const initializer: StateCreator<State> = (set, get) => ({
   },
   changeZoom: delta =>
     set({
-      zoom: Math.max(
+      zoom: clamp(
         get().zoomLevels[0],
-        Math.min(get().zoomLevels.at(-1)!, get().zoom * Math.exp(-delta / 10)),
+        get().zoomLevels.at(-1)!,
+        get().zoom * Math.exp(-delta / 10),
       ),
     }),
   setSize: (newWidth, newHeight) => {

@@ -1,5 +1,7 @@
 import { styled } from '@linaria/react'
 
+import { clamp } from '../lib/utils'
+
 interface Props {
   min: number
   max: number
@@ -13,7 +15,7 @@ export function NumberInput({ min, max, value, setValue }: Props) {
     if (input === '') {
       setValue(min)
     } else if (/^\d+$/.test(input)) {
-      setValue(Math.max(min, Math.min(max, Number(input))))
+      setValue(clamp(min, max, Number(input)))
     }
   }
   function inc() {
