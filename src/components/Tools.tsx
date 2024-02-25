@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 import {
   LuCircle,
   LuHand,
+  LuMove,
   LuPaintBucket,
   LuPencil,
   LuRectangleHorizontal,
@@ -17,9 +18,10 @@ const icons = {
   rect: LuRectangleHorizontal,
   ellipse: LuCircle,
   hand: LuHand,
+  move: LuMove,
 }
 
-const tools: Tool[] = ['pencil', 'bucket', 'rect', 'ellipse', 'hand']
+const tools: Tool[] = ['pencil', 'bucket', 'rect', 'ellipse', 'move', 'hand']
 
 export function Tools() {
   const tool = useStore(state => state.tool)

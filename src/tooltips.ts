@@ -10,6 +10,7 @@ export const tooltips = {
   rect: `Rectangle\n\nU`,
   ellipse: `Ellipse\n\nShift+U`,
   hand: `Hand\n\nH`,
+  move: `Move\n\nV`,
 }
 
 export type TooltipPosition =

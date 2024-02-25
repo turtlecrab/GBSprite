@@ -5,6 +5,7 @@ import { getLine, getPixelCoords } from '../lib/utils'
 import { bucket } from './tools/bucket'
 import { ellipse } from './tools/ellipse'
 import { hand } from './tools/hand'
+import { move } from './tools/move'
 import { pencil } from './tools/pencil'
 import { rect } from './tools/rect'
 
@@ -14,7 +15,7 @@ const DEFAULT_HEIGHT = 1
 const DEFAULT_PIXELS_SIZE =
   DEFAULT_TILE_SIZE * DEFAULT_TILE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
-export type Tool = 'pencil' | 'bucket' | 'rect' | 'ellipse' | 'hand'
+export type Tool = 'pencil' | 'bucket' | 'rect' | 'ellipse' | 'hand' | 'move'
 export type MouseButton = 'left' | 'right' | 'middle'
 
 interface StateSnapshot {
@@ -57,6 +58,7 @@ export interface State {
   gridVisible: boolean
   tooltipsVisible: boolean
   draft: number[][]
+  moveOffset: { x: number; y: number } | null
   exportSettings: {
     title: string
     mode: '8x8' | '8x16'
@@ -77,6 +79,7 @@ export interface State {
     filledEllipse: boolean
   }
 
+  setMoveOffset: (moveOffset: State['moveOffset']) => void
   setPreviewSettings: (settings: Partial<State['previewSettings']>) => void
   setToolSettings: (settings: Partial<State['toolSettings']>) => void
   resetCanvasPos: () => void
@@ -132,6 +135,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   gridVisible: false,
   tooltipsVisible: !window.matchMedia('(pointer: coarse)').matches,
   draft: [],
+  moveOffset: null,
   previewSettings: {
     zoom: 2,
     zoomLevels: [1, 2, 4, 8, 12],
@@ -152,6 +156,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     filledEllipse: false,
   },
 
+  setMoveOffset: moveOffset => set({ moveOffset }),
   setPreviewSettings: settings =>
     set({ previewSettings: { ...get().previewSettings, ...settings } }),
   setToolSettings: settings =>
@@ -250,6 +255,7 @@ const initializer: StateCreator<State> = (set, get) => ({
       case 'rect': rect.startDragging(index, button, set, get); break
       case 'ellipse': ellipse.startDragging(index, button, set, get); break
       case 'hand': hand.startDragging(index, button, set, get); break
+      case 'move': move.startDragging(index, button, set, get); break
     }
   },
   hoverPixel: (index, dx, dy) => {
@@ -264,6 +270,7 @@ const initializer: StateCreator<State> = (set, get) => ({
       case 'rect': rect.hoverPixel(index, set, get); break
       case 'ellipse': ellipse.hoverPixel(index, set, get); break
       case 'hand': hand.hoverPixel(dx, dy, set, get); break
+      case 'move': move.hoverPixel(index, set, get); break
     }
     set({ lastHoveredPixel: index })
   },
@@ -274,6 +281,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     switch (get().tool) {
       case 'rect': rect.stopDragging(set, get); break
       case 'ellipse': ellipse.stopDragging(set, get); break
+      case 'move': move.stopDragging(set, get); break
       default:
         get().commitDraft()
     }

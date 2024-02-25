@@ -11,6 +11,7 @@ export function Debug() {
   const altPressed = useStore(state => state.altPressed)
   const shiftPressed = useStore(state => state.shiftPressed)
   const ctrlPressed = useStore(state => state.ctrlPressed)
+  const moveOffset = useStore(state => state.moveOffset)
 
   return (
     <List>
@@ -33,6 +34,7 @@ export function Debug() {
             Object.values(getPixelCoords(lastDrawnPixel, pixelWidth)),
           )}
       </li>
+      <li>moveOffset: {JSON.stringify(moveOffset)}</li>
     </List>
   )
 }

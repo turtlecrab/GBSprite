@@ -23,6 +23,7 @@ export function Canvas() {
   const tool = useStore(state => state.tool)
   const canvasPos = useStore(state => state.canvasPos)
   const zoom = useStore(state => state.zoom)
+  const moveOffset = useStore(state => state.moveOffset)
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
   const hoverPixel = useStore(state => state.hoverPixel)
@@ -85,8 +86,28 @@ export function Canvas() {
       bytesRef.current[offset + 3] = 255
     }
 
-    ctx.putImageData(dataRef.current, 0, 0)
-  }, [ctx, palette, pixelHeight, pixelWidth, pixels])
+    // TODO
+    if (moveOffset) {
+      for (let spriteOffset of [
+        [-1, -1],
+        [0, -1],
+        [1, -1],
+        [-1, 0],
+        [0, 0],
+        [1, 0],
+        [-1, 1],
+        [0, 1],
+        [1, 1],
+      ])
+        ctx.putImageData(
+          dataRef.current,
+          pixelWidth * spriteOffset[0] + moveOffset.x,
+          pixelHeight * spriteOffset[1] + moveOffset.y,
+        )
+    } else {
+      ctx.putImageData(dataRef.current, 0, 0)
+    }
+  }, [ctx, palette, pixelHeight, pixelWidth, pixels, moveOffset])
 
   useEffect(() => {
     if (!draftCtx) return
@@ -106,6 +127,7 @@ export function Canvas() {
       lastHoveredPixel !== null &&
       !altPressed &&
       tool !== 'hand' &&
+      tool !== 'move' &&
       (tool !== 'ellipse' || !draft.length)
     ) {
       const { x, y } = getPixelCoords(lastHoveredPixel, pixelWidth)
@@ -238,6 +260,7 @@ const cursors = {
   rect: 'crosshair',
   ellipse: 'crosshair',
   hand: 'grab',
+  move: 'move',
 }
 
 function getCursor(altPressed: boolean, dragging: string | null, tool: Tool) {
