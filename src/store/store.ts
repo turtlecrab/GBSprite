@@ -67,8 +67,8 @@ export interface State {
   previewSettings: {
     zoom: number
     zoomLevels: number[]
-    isPixelPerfect: boolean
-    isTiled: boolean
+    isDevicePixel: boolean
+    tiledFactor: number
   }
   canvasPos: { left: number; top: number }
   container: { width: number; height: number }
@@ -139,8 +139,8 @@ const initializer: StateCreator<State> = (set, get) => ({
   previewSettings: {
     zoom: 2,
     zoomLevels: [1, 2, 4, 8, 12],
-    isPixelPerfect: true,
-    isTiled: true,
+    isDevicePixel: !window.matchMedia('(pointer: coarse)').matches,
+    tiledFactor: 3,
   },
   exportSettings: {
     title: '',

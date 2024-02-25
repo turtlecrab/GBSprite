@@ -13,8 +13,8 @@ export function Preview() {
   const palette = useStore(state => state.palette)
   const zoom = useStore(state => state.previewSettings.zoom)
   const zoomLevels = useStore(state => state.previewSettings.zoomLevels)
-  const isPixelPerfect = useStore(state => state.previewSettings.isPixelPerfect)
-  const isTiled = useStore(state => state.previewSettings.isTiled)
+  const isDevicePixel = useStore(state => state.previewSettings.isDevicePixel)
+  const tiledFactor = useStore(state => state.previewSettings.tiledFactor)
   const setPreviewSettings = useStore(state => state.setPreviewSettings)
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -38,25 +38,24 @@ export function Preview() {
       return [r, g, b, 255]
     }
 
+    // TODO: refactor to use data from the drawing canvas
+    // (via separate store?)
     const bytes = new Uint8ClampedArray(pixels.flatMap(toBytes))
 
     const data = new ImageData(bytes, pixelWidth, pixelHeight)
 
-    if (!isTiled) {
-      ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-      ctx.putImageData(data, pixelWidth, pixelHeight)
-    } else {
-      for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-          ctx.putImageData(data, pixelWidth * i, pixelHeight * j)
-        }
+    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+
+    for (let i = 0; i < tiledFactor; i++) {
+      for (let j = 0; j < tiledFactor; j++) {
+        ctx.putImageData(data, pixelWidth * i, pixelHeight * j)
       }
     }
-  }, [ctx, pixels, pixelWidth, pixelHeight, palette, isTiled])
+  }, [ctx, pixels, pixelWidth, pixelHeight, palette, tiledFactor])
 
   const [ratio, setRatio] = useState(window.devicePixelRatio)
 
-  const zoomFactor = zoom * (isPixelPerfect ? 1 / ratio : 1)
+  const zoomFactor = zoom * (isDevicePixel ? 1 / ratio : 1)
 
   useEffect(() => {
     function onResize() {
@@ -83,26 +82,32 @@ export function Preview() {
       </Controls>
       <Controls>
         <Checkbox
-          value={isPixelPerfect}
-          setValue={v => setPreviewSettings({ isPixelPerfect: v })}
+          value={isDevicePixel}
+          setValue={v => setPreviewSettings({ isDevicePixel: v })}
         >
-          Pixel-perfect
+          Device pixel
         </Checkbox>
         <Checkbox
-          value={isTiled}
-          setValue={v => setPreviewSettings({ isTiled: v })}
+          value={tiledFactor === 1}
+          setValue={() => setPreviewSettings({ tiledFactor: 1 })}
         >
-          Tiled
+          1
+        </Checkbox>
+        <Checkbox
+          value={tiledFactor === 3}
+          setValue={() => setPreviewSettings({ tiledFactor: 3 })}
+        >
+          3
         </Checkbox>
       </Controls>
       <CanvasWrapper
-        $width={pixelWidth * zoomFactor}
-        $height={pixelHeight * zoomFactor}
+        $width={pixelWidth * tiledFactor * zoomFactor}
+        $height={pixelHeight * tiledFactor * zoomFactor}
         $bg={palette[0]}
       >
         <canvas
-          width={pixelWidth * 3}
-          height={pixelHeight * 3}
+          width={pixelWidth * tiledFactor}
+          height={pixelHeight * tiledFactor}
           ref={canvasRef}
         />
       </CanvasWrapper>
@@ -144,7 +149,7 @@ const CanvasWrapper = styled.div<{
 
   canvas {
     image-rendering: pixelated;
-    width: calc(${p => p.$width} * 3px);
-    height: calc(${p => p.$height} * 3px);
+    width: calc(${p => p.$width} * 1px);
+    height: calc(${p => p.$height} * 1px);
   }
 `
