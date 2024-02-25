@@ -9,6 +9,7 @@ const header = {
   rect: 'Rectangle',
   ellipse: 'Ellipse',
   hand: 'Hand',
+  move: 'Move',
 }
 
 export function ToolSettings() {
