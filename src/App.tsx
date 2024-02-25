@@ -1,4 +1,5 @@
 import { styled } from '@linaria/react'
+import { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
 
 import { Canvas } from './components/Canvas'
@@ -14,8 +15,19 @@ export default function App() {
 
   const tooltipsVisible = useStore(state => state.tooltipsVisible)
 
+  useEffect(() => {
+    if (!tooltipsVisible) {
+      document.body.classList.add('no-tooltips')
+    } else {
+      document.body.classList.remove('no-tooltips')
+    }
+    return () => {
+      document.body.classList.remove('no-tooltips')
+    }
+  }, [tooltipsVisible])
+
   return (
-    <Main className={tooltipsVisible ? '' : 'no-tooltips'}>
+    <Main>
       <Top>
         <Header>GBSprite</Header>
         <ToolBar />
