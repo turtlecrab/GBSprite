@@ -29,10 +29,14 @@ export function useHotkeys() {
           case 'KeyU': setTool('rect'); break
           case 'KeyH': setTool('hand'); break
           case 'KeyV': setTool('move'); break
-          case 'Equal': zoomIn(); break
-          case 'Minus': zoomOut(); break
         }
       }
+
+      // =
+      if (e.code === 'Equal' && !e.ctrlKey) zoomIn()
+
+      // -
+      if (e.code === 'Minus' && !e.ctrlKey) zoomOut()
 
       // Ctrl+0
       if (e.code === 'Digit0' && e.ctrlKey) fitCanvas()
