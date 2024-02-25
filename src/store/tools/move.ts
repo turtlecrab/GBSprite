@@ -40,8 +40,8 @@ function getOffsetImage(
 
   for (let y = 0; y < height; y++) {
     for (let x = 0; x < width; x++) {
-      const prevX = (x - offset.x + width) % width
-      const prevY = (y - offset.y + height) % height
+      const prevX = (x - (offset.x % width) + width) % width
+      const prevY = (y - (offset.y % height) + height) % height
       const prevIndex = prevX + prevY * width
 
       offsetImage.push(image[prevIndex])

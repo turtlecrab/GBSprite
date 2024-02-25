@@ -2,7 +2,7 @@ import { styled } from '@linaria/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { LuMaximize2 } from 'react-icons/lu'
 
-import { getPixelCoords } from '../lib/utils'
+import { clamp, getPixelCoords } from '../lib/utils'
 import { Tool, useStore } from '../store/store'
 import { IconButton } from './IconButton'
 import { TileGrid } from './TileGrid'
@@ -101,8 +101,8 @@ export function Canvas() {
       ])
         ctx.putImageData(
           dataRef.current,
-          pixelWidth * spriteOffset[0] + moveOffset.x,
-          pixelHeight * spriteOffset[1] + moveOffset.y,
+          pixelWidth * spriteOffset[0] + (moveOffset.x % pixelWidth),
+          pixelHeight * spriteOffset[1] + (moveOffset.y % pixelHeight),
         )
     } else {
       ctx.putImageData(dataRef.current, 0, 0)
@@ -246,10 +246,18 @@ export function Canvas() {
 
 function getPointerPixelCoords(e: React.PointerEvent, w: number, h: number) {
   const rect = e.currentTarget.getBoundingClientRect()
-  // x, y can be negative for some reason, hence Math.max
-  // TODO: investigate, clamp right/bottom?
-  const x = Math.max(0, Math.floor(((e.clientX - rect.left) / rect.width) * w))
-  const y = Math.max(0, Math.floor(((e.clientY - rect.top) / rect.height) * h))
+  // x, y can be negative for some reason, hence clamp
+  // TODO: investigate
+  const x = clamp(
+    0,
+    w - 1,
+    Math.floor(((e.clientX - rect.left) / rect.width) * w),
+  )
+  const y = clamp(
+    0,
+    h - 1,
+    Math.floor(((e.clientY - rect.top) / rect.height) * h),
+  )
 
   return { x, y }
 }
