@@ -420,9 +420,11 @@ export const useStore = create<State>()(
       pixels: state.pixels,
       color: state.color,
       zoom: state.zoom,
-      exportSettings: state.exportSettings,
       canvasPos: state.canvasPos,
       tooltipsVisible: state.tooltipsVisible,
+      exportSettings: state.exportSettings,
+      previewSettings: state.previewSettings,
+      toolSettings: state.toolSettings,
     }),
   }),
 )
