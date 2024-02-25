@@ -1,10 +1,11 @@
 import { styled } from '@linaria/react'
 import { ReactNode, useState } from 'react'
-import { LuWrench } from 'react-icons/lu'
+import { LuBug, LuFileDown, LuSettings, LuView, LuWrench } from 'react-icons/lu'
 import { Drawer } from 'vaul'
 
 import { breakpoints } from '../breakpoints'
 import { useMediaQuery } from '../hooks/useMediaQuery'
+import { getTooltipProps } from '../tooltips'
 import { Debug } from './Debug'
 import { Export } from './Export'
 import { IconButton } from './IconButton'
@@ -13,11 +14,11 @@ import { Settings } from './Settings'
 import { ToolSettings } from './ToolSettings'
 
 const tabs = [
-  { name: 'ToolSettings', component: ToolSettings },
-  { name: 'Settings', component: Settings },
-  { name: 'Export', component: Export },
-  { name: 'Preview', component: Preview },
-  { name: 'Debug', component: Debug },
+  { name: 'Tool settings', component: ToolSettings, icon: LuWrench },
+  { name: 'Settings', component: Settings, icon: LuSettings },
+  { name: 'Export', component: Export, icon: LuFileDown },
+  { name: 'Preview', component: Preview, icon: LuView },
+  { name: 'Debug', component: Debug, icon: LuBug },
 ]
 
 export function Tabs() {
@@ -30,13 +31,18 @@ export function Tabs() {
 
   return (
     <ContainerComponent>
-      <div>
-        {tabs.map(({ name }, i) => (
-          <TabButton key={i} onClick={() => setTab(i)}>
-            {name}
+      <TabWrapper>
+        {tabs.map(({ name, icon: Icon }, i) => (
+          <TabButton
+            key={i}
+            onClick={() => setTab(i)}
+            $active={tab === i}
+            {...getTooltipProps(name, 'up-right')}
+          >
+            <Icon />
           </TabButton>
         ))}
-      </div>
+      </TabWrapper>
       <TabComponent />
     </ContainerComponent>
   )
@@ -57,11 +63,15 @@ function Vaul(props: { children: ReactNode }) {
 }
 
 const Container = styled.div`
-  flex: 0 1 200px;
+  flex: 0 1 240px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin: 0px 16px;
+`
+
+const TabWrapper = styled.div`
+  display: flex;
 `
 
 const Trigger = styled(Drawer.Trigger)`
@@ -93,4 +103,24 @@ const Content = styled(Drawer.Content)`
   padding: 12px;
 `
 
-const TabButton = styled.button``
+const TabButton = styled.button<{ $active: boolean }>`
+  cursor: pointer;
+  color: var(--gray-9);
+  background-color: ${p => (p.$active ? 'white' : 'var(--gray-1)')};
+  width: 40px;
+  height: 40px;
+  border: 2px solid var(--gray-3);
+  border-radius: 4px 4px 0 0;
+  border-bottom-color: ${p => (p.$active ? 'transparent' : 'var(--gray-2)')};
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  margin-left: -1px;
+
+  & > svg {
+    width: 100%;
+    height: 100%;
+    stroke-width: 1.5px;
+  }
+`
