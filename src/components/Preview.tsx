@@ -1,6 +1,7 @@
 import { styled } from '@linaria/react'
 import { useEffect, useRef, useState } from 'react'
 
+import { breakpoints } from '../breakpoints'
 import { useStore } from '../store/store'
 import { Checkbox } from './Checkbox'
 
@@ -80,17 +81,6 @@ export function Preview() {
           </button>
         ))}
       </Controls>
-      <CanvasWrapper
-        $width={pixelWidth * zoomFactor}
-        $height={pixelHeight * zoomFactor}
-        $bg={palette[0]}
-      >
-        <canvas
-          width={pixelWidth * 3}
-          height={pixelHeight * 3}
-          ref={canvasRef}
-        />
-      </CanvasWrapper>
       <Controls>
         <Checkbox
           value={isPixelPerfect}
@@ -105,6 +95,17 @@ export function Preview() {
           Tiled
         </Checkbox>
       </Controls>
+      <CanvasWrapper
+        $width={pixelWidth * zoomFactor}
+        $height={pixelHeight * zoomFactor}
+        $bg={palette[0]}
+      >
+        <canvas
+          width={pixelWidth * 3}
+          height={pixelHeight * 3}
+          ref={canvasRef}
+        />
+      </CanvasWrapper>
     </Container>
   )
 }
@@ -115,6 +116,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
 `
 
 const Controls = styled.div`
@@ -133,11 +135,12 @@ const CanvasWrapper = styled.div<{
 }>`
   background-color: ${p => p.$bg};
   padding: 16px;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
   max-width: 90vw;
   overflow: auto;
+
+  @media ${breakpoints.md} {
+    max-width: 50vw;
+  }
 
   canvas {
     image-rendering: pixelated;
