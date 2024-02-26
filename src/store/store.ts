@@ -59,7 +59,11 @@ export interface State {
   tooltipsVisible: boolean
   draft: number[][]
   moveOffset: { x: number; y: number } | null
+  canvasPos: { left: number; top: number }
+  container: { width: number; height: number }
+  tab: 'tool' | 'settings' | 'export' | 'preview' | 'debug'
   exportSettings: {
+    formatTab: 'png' | 'c'
     title: string
     mode: '8x8' | '8x16'
     scale: number
@@ -70,8 +74,6 @@ export interface State {
     isDevicePixel: boolean
     tiledFactor: number
   }
-  canvasPos: { left: number; top: number }
-  container: { width: number; height: number }
   toolSettings: {
     pixelPerfectPencil: boolean
     continuousBucket: boolean
@@ -79,6 +81,7 @@ export interface State {
     filledEllipse: boolean
   }
 
+  setTab: (tab: State['tab']) => void
   setMoveOffset: (moveOffset: State['moveOffset']) => void
   setPreviewSettings: (settings: Partial<State['previewSettings']>) => void
   setToolSettings: (settings: Partial<State['toolSettings']>) => void
@@ -136,6 +139,9 @@ const initializer: StateCreator<State> = (set, get) => ({
   tooltipsVisible: !window.matchMedia('(pointer: coarse)').matches,
   draft: [],
   moveOffset: null,
+  canvasPos: { left: 50, top: 50 },
+  container: { width: 0, height: 0 },
+  tab: 'tool',
   previewSettings: {
     zoom: 2,
     zoomLevels: [1, 2, 4, 8, 12],
@@ -143,12 +149,11 @@ const initializer: StateCreator<State> = (set, get) => ({
     tiledFactor: 3,
   },
   exportSettings: {
+    formatTab: 'png',
     title: '',
     mode: '8x8',
     scale: 4,
   },
-  canvasPos: { left: 50, top: 50 },
-  container: { width: 0, height: 0 },
   toolSettings: {
     pixelPerfectPencil: true,
     continuousBucket: true,
@@ -156,6 +161,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     filledEllipse: false,
   },
 
+  setTab: tab => set({ tab }),
   setMoveOffset: moveOffset => set({ moveOffset }),
   setPreviewSettings: settings =>
     set({ previewSettings: { ...get().previewSettings, ...settings } }),
@@ -421,6 +427,7 @@ export const useStore = create<State>()(
       color: state.color,
       zoom: state.zoom,
       canvasPos: state.canvasPos,
+      tab: state.tab,
       tooltipsVisible: state.tooltipsVisible,
       exportSettings: state.exportSettings,
       previewSettings: state.previewSettings,

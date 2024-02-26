@@ -6,6 +6,7 @@ import { clamp, getPixelCoords } from '../lib/utils'
 import { Tool, useStore } from '../store/store'
 import { IconButton } from './IconButton'
 import { TileGrid } from './TileGrid'
+import { TileIndices } from './TileIndices'
 
 export function Canvas() {
   const pixels = useStore(state => state.pixels)
@@ -24,6 +25,9 @@ export function Canvas() {
   const canvasPos = useStore(state => state.canvasPos)
   const zoom = useStore(state => state.zoom)
   const moveOffset = useStore(state => state.moveOffset)
+  const showTileIndices = useStore(
+    state => state.tab === 'export' && state.exportSettings.formatTab === 'c',
+  )
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
   const hoverPixel = useStore(state => state.hoverPixel)
@@ -235,7 +239,8 @@ export function Canvas() {
           onPointerLeave={clearLastHoveredPixel}
         />
         <DraftCanvas width={pixelWidth} height={pixelHeight} ref={draftRef} />
-        {gridVisible && <TileGrid />}
+        {(gridVisible || showTileIndices) && <TileGrid />}
+        {showTileIndices && <TileIndices />}
       </CanvasWrapper>
       <FitCanvasButton onClick={() => fitCanvas()}>
         <LuMaximize2 size="100%" />

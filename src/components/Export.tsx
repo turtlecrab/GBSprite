@@ -12,6 +12,7 @@ export function Export() {
   const scale = useStore(state => state.exportSettings.scale)
   const mode = useStore(state => state.exportSettings.mode)
   const title = useStore(state => state.exportSettings.title)
+  const formatTab = useStore(state => state.exportSettings.formatTab)
   const setExportSettings = useStore(state => state.setExportSettings)
 
   // forbid 8x16 export for sprite with odd rows
@@ -124,31 +125,19 @@ export function Export() {
         value={title}
         onChange={e => setExportSettings({ title: e.currentTarget.value })}
       />
-      <ExportOptions>
-        <li>
+      <Radio
+        value={formatTab}
+        onChange={formatTab => setExportSettings({ formatTab })}
+      >
+        <RadioGroup.Option value="png" as="button">
+          PNG image
+        </RadioGroup.Option>
+        <RadioGroup.Option value="c" as="button">
           GBDK C file
-          <div>
-            Mode:{' '}
-            <Radio
-              value={adjustedMode}
-              onChange={mode => setExportSettings({ mode })}
-            >
-              <RadioGroup.Option value="8x8" as="button">
-                8x8
-              </RadioGroup.Option>
-              {isEvenHeight && (
-                <RadioGroup.Option value="8x16" as="button">
-                  8x16
-                </RadioGroup.Option>
-              )}
-            </Radio>
-          </div>
-          <div>
-            <button onClick={copyC}>Copy to clipboard</button>
-            <button onClick={downloadC}>Download .c file</button>
-          </div>
-        </li>
-        <li>
+        </RadioGroup.Option>
+      </Radio>
+      {formatTab === 'png' && (
+        <>
           PNG image
           <div>
             Scale:{' '}
@@ -174,18 +163,40 @@ export function Export() {
             <button onClick={copyPNG}>Copy to clipboard</button>
             <button onClick={downloadPNG}>Download .png file</button>
           </div>
-        </li>
-      </ExportOptions>
+        </>
+      )}
+      {formatTab === 'c' && (
+        <>
+          GBDK C file
+          <div>
+            Mode:{' '}
+            <Radio
+              value={adjustedMode}
+              onChange={mode => setExportSettings({ mode })}
+            >
+              <RadioGroup.Option value="8x8" as="button">
+                8x8
+              </RadioGroup.Option>
+              {isEvenHeight && (
+                <RadioGroup.Option value="8x16" as="button">
+                  8x16
+                </RadioGroup.Option>
+              )}
+            </Radio>
+          </div>
+          <div>
+            <button onClick={copyC}>Copy to clipboard</button>
+            <button onClick={downloadC}>Download .c file</button>
+          </div>
+        </>
+      )}
     </Container>
   )
 }
 
-const Container = styled.div``
-
-const ExportOptions = styled.ul`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
 `
 
 const Radio = styled(RadioGroup)`

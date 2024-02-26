@@ -1,10 +1,11 @@
 import { styled } from '@linaria/react'
-import { ReactNode, useState } from 'react'
+import { ReactNode } from 'react'
 import { LuBug, LuFileDown, LuSettings, LuView, LuWrench } from 'react-icons/lu'
 import { Drawer } from 'vaul'
 
 import { breakpoints } from '../breakpoints'
 import { useMediaQuery } from '../hooks/useMediaQuery'
+import { State, useStore } from '../store/store'
 import { getTooltipProps } from '../tooltips'
 import { Debug } from './Debug'
 import { Export } from './Export'
@@ -13,16 +14,17 @@ import { Preview } from './Preview'
 import { Settings } from './Settings'
 import { ToolSettings } from './ToolSettings'
 
-const tabs = [
-  { name: 'Tool settings', component: ToolSettings, icon: LuWrench },
-  { name: 'Settings', component: Settings, icon: LuSettings },
-  { name: 'Export', component: Export, icon: LuFileDown },
-  { name: 'Preview', component: Preview, icon: LuView },
-  { name: 'Debug', component: Debug, icon: LuBug },
-]
+const tabs = {
+  tool: { name: 'Tool settings', component: ToolSettings, icon: LuWrench },
+  settings: { name: 'Settings', component: Settings, icon: LuSettings },
+  export: { name: 'Export', component: Export, icon: LuFileDown },
+  preview: { name: 'Preview', component: Preview, icon: LuView },
+  debug: { name: 'Debug', component: Debug, icon: LuBug },
+}
 
 export function Tabs() {
-  const [tab, setTab] = useState(0)
+  const tab = useStore(state => state.tab)
+  const setTab = useStore(state => state.setTab)
 
   const isMobile = !useMediaQuery(breakpoints.md)
 
@@ -32,11 +34,11 @@ export function Tabs() {
   return (
     <ContainerComponent>
       <TabWrapper>
-        {tabs.map(({ name, icon: Icon }, i) => (
+        {Object.entries(tabs).map(([key, { name, icon: Icon }]) => (
           <TabButton
-            key={i}
-            onClick={() => setTab(i)}
-            $active={tab === i}
+            key={key}
+            onClick={() => setTab(key as State['tab'])}
+            $active={tab === key}
             {...getTooltipProps(name, 'up-right')}
           >
             <Icon />
