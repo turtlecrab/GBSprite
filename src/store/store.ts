@@ -66,6 +66,10 @@ export interface State {
     formatTab: 'png' | 'c'
     title: string
     mode: '8x8' | '8x16'
+    withAsciiArtC: boolean
+    withConstantsC: boolean
+    withAsciiArtH: boolean
+    withConstantsH: boolean
     scale: number
   }
   previewSettings: {
@@ -152,6 +156,10 @@ const initializer: StateCreator<State> = (set, get) => ({
     formatTab: 'png',
     title: '',
     mode: '8x8',
+    withAsciiArtC: true,
+    withConstantsC: true,
+    withAsciiArtH: false,
+    withConstantsH: false,
     scale: 4,
   },
   toolSettings: {

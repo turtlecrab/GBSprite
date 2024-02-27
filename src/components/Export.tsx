@@ -2,8 +2,9 @@ import { RadioGroup } from '@headlessui/react'
 import { styled } from '@linaria/react'
 import toast from 'react-hot-toast'
 
-import { exportC } from '../lib/exportC'
+import { exportC, exportH } from '../lib/exportC'
 import { useStore } from '../store/store'
+import { Checkbox } from './Checkbox'
 
 const DEFAULT_TITLE = 'awesome_sprite'
 
@@ -13,27 +14,33 @@ export function Export() {
   const mode = useStore(state => state.exportSettings.mode)
   const title = useStore(state => state.exportSettings.title)
   const formatTab = useStore(state => state.exportSettings.formatTab)
+  const withAsciiArtC = useStore(state => state.exportSettings.withAsciiArtC)
+  const withAsciiArtH = useStore(state => state.exportSettings.withAsciiArtH)
+  const withConstantsC = useStore(state => state.exportSettings.withConstantsC)
+  const withConstantsH = useStore(state => state.exportSettings.withConstantsH)
   const setExportSettings = useStore(state => state.setExportSettings)
 
   // forbid 8x16 export for sprite with odd rows
   const adjustedMode = isEvenHeight ? mode : '8x8'
 
-  async function copyC() {
+  const finalTitle = title || DEFAULT_TITLE
+
+  async function copyText(text: string) {
     try {
-      await navigator.clipboard.writeText(getCSource())
+      await navigator.clipboard.writeText(text)
     } catch (err) {
       console.error(err)
       toast.error(`Couldn't copy to the clipboard:\n\n${err}`)
     }
   }
 
-  function downloadC() {
+  function downloadText(text: string, filename: string) {
     try {
-      const blob = new Blob([getCSource()], { type: 'text/plain' })
+      const blob = new Blob([text], { type: 'text/plain' })
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${title || DEFAULT_TITLE}.c`
+      a.download = filename
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
@@ -61,7 +68,7 @@ export function Export() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${title || DEFAULT_TITLE}.png`
+      a.download = `${finalTitle}.png`
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
@@ -72,9 +79,22 @@ export function Export() {
   function getCSource() {
     return exportC(
       useStore.getState().pixels,
-      title || DEFAULT_TITLE,
+      finalTitle,
       useStore.getState().width,
       adjustedMode,
+      useStore.getState().exportSettings.withAsciiArtC,
+      useStore.getState().exportSettings.withConstantsC,
+    )
+  }
+
+  function getHSource() {
+    return exportH(
+      useStore.getState().pixels,
+      finalTitle,
+      useStore.getState().width,
+      adjustedMode,
+      useStore.getState().exportSettings.withAsciiArtH,
+      useStore.getState().exportSettings.withConstantsH,
     )
   }
 
@@ -117,14 +137,15 @@ export function Export() {
 
   return (
     <Container>
+      Title
       <br />
-      Title:{' '}
       <input
         type="text"
         placeholder={DEFAULT_TITLE}
         value={title}
         onChange={e => setExportSettings({ title: e.currentTarget.value })}
       />
+      <br />
       <Radio
         value={formatTab}
         onChange={formatTab => setExportSettings({ formatTab })}
@@ -138,7 +159,7 @@ export function Export() {
       </Radio>
       {formatTab === 'png' && (
         <>
-          PNG image
+          <h2>PNG image</h2>
           <div>
             Scale:{' '}
             <Radio
@@ -159,15 +180,16 @@ export function Export() {
               </RadioGroup.Option>
             </Radio>
           </div>
+          <br />
           <div>
             <button onClick={copyPNG}>Copy to clipboard</button>
-            <button onClick={downloadPNG}>Download .png file</button>
+            <button onClick={downloadPNG}>Download</button>
           </div>
         </>
       )}
       {formatTab === 'c' && (
         <>
-          GBDK C file
+          <h2>GBDK C file</h2>
           <div>
             Mode:{' '}
             <Radio
@@ -184,9 +206,51 @@ export function Export() {
               )}
             </Radio>
           </div>
+          <h3>{finalTitle}.c</h3>
+          <Checkbox
+            value={withAsciiArtC}
+            setValue={v => setExportSettings({ withAsciiArtC: v })}
+          >
+            include ascii art comment
+          </Checkbox>
+          <Checkbox
+            value={withConstantsC}
+            setValue={v => setExportSettings({ withConstantsC: v })}
+          >
+            include constants
+          </Checkbox>
           <div>
-            <button onClick={copyC}>Copy to clipboard</button>
-            <button onClick={downloadC}>Download .c file</button>
+            <button onClick={() => copyText(getCSource())}>
+              Copy to clipboard
+            </button>
+            <button
+              onClick={() => downloadText(getCSource(), `${finalTitle}.c`)}
+            >
+              Download
+            </button>
+          </div>
+          <h3>{finalTitle}.h</h3>
+          <Checkbox
+            value={withAsciiArtH}
+            setValue={v => setExportSettings({ withAsciiArtH: v })}
+          >
+            include ascii art comment
+          </Checkbox>
+          <Checkbox
+            value={withConstantsH}
+            setValue={v => setExportSettings({ withConstantsH: v })}
+          >
+            include constants
+          </Checkbox>
+          <div>
+            <button onClick={() => copyText(getHSource())}>
+              Copy to clipboard
+            </button>
+            <button
+              onClick={() => downloadText(getHSource(), `${finalTitle}.h`)}
+            >
+              Download
+            </button>
           </div>
         </>
       )}
@@ -197,6 +261,12 @@ export function Export() {
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  overflow: auto;
+  min-width: 240px;
+
+  h3 {
+    margin: 16px 0 8px;
+  }
 `
 
 const Radio = styled(RadioGroup)`
