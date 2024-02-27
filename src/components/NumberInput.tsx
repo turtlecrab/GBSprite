@@ -6,7 +6,7 @@ interface Props {
   min: number
   max: number
   value: number
-  setValue: React.Dispatch<React.SetStateAction<number>>
+  setValue: (value: number) => void
 }
 
 export function NumberInput({ min, max, value, setValue }: Props) {
@@ -54,6 +54,7 @@ const Container = styled.div`
   }
   input {
     font-size: 1rem;
-    width: 2rem;
+    width: 2.5rem;
+    text-align: center;
   }
 `

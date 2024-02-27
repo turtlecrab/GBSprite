@@ -48,6 +48,7 @@ export interface State {
   ctrlPressed: boolean
   history: StateSnapshot[]
   redoHistory: StateSnapshot[]
+  maxUndo: number
   zoom: number
   zoomLevels: number[]
   gridVisible: boolean
@@ -80,6 +81,7 @@ export interface State {
     filledEllipse: boolean
   }
 
+  setMaxUndo: (maxUndo: number) => void
   setTab: (tab: State['tab']) => void
   setMoveOffset: (moveOffset: State['moveOffset']) => void
   setPreviewSettings: (settings: Partial<State['previewSettings']>) => void
@@ -132,6 +134,7 @@ const initializer: StateCreator<State> = (set, get) => ({
   ctrlPressed: false,
   history: [],
   redoHistory: [],
+  maxUndo: 100,
   zoom: 32,
   zoomLevels: [2, 4, 6, 8, 10, 12, 16, 24, 32, 48, 64, 96, 128],
   gridVisible: false,
@@ -164,6 +167,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     filledEllipse: false,
   },
 
+  setMaxUndo: maxUndo => set({ maxUndo }),
   setTab: tab => set({ tab }),
   setMoveOffset: moveOffset => set({ moveOffset }),
   setPreviewSettings: settings =>
@@ -307,11 +311,13 @@ const initializer: StateCreator<State> = (set, get) => ({
       lastDrawnPixel: get().draft.at(-1)?.at(-1) ?? null,
     })
   },
-  pushStateToHistory: () =>
+  pushStateToHistory: () => {
+    const sliceFrom = Math.max(0, get().history.length - get().maxUndo + 1)
     set(state => ({
-      history: [...state.history, getStateSnapshot(state)],
+      history: [...state.history.slice(sliceFrom), getStateSnapshot(state)],
       redoHistory: [],
-    })),
+    }))
+  },
   clearLastHoveredPixel: () => set({ lastHoveredPixel: null }),
   undo: () => {
     if (get().history.length === 0 || get().dragging) return

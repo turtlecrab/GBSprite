@@ -25,9 +25,10 @@ export function Settings() {
 
   const gridVisible = useStore(state => state.gridVisible)
   const tooltipsVisible = useStore(state => state.tooltipsVisible)
+  const maxUndo = useStore(state => state.maxUndo)
   const setGridVisible = useStore(state => state.setGridVisible)
   const setTooltipsVisible = useStore(state => state.setTooltipsVisible)
-  const fillCanvas = useStore(state => state.fillCanvas)
+  const setMaxUndo = useStore(state => state.setMaxUndo)
 
   return (
     <Container>
@@ -38,6 +39,11 @@ export function Settings() {
       <Checkbox value={gridVisible} setValue={setGridVisible}>
         Show tile grid
       </Checkbox>
+      <Group>
+        Max undo
+        <NumberInput min={1} max={9999} value={maxUndo} setValue={setMaxUndo} />
+      </Group>
+      <h2>Resize</h2>
       <Group>
         <NumberInput min={1} max={20} value={cols} setValue={setCols} /> Columns
       </Group>
@@ -58,7 +64,6 @@ export function Settings() {
           Cancel
         </button>
       </Group>
-      <button onClick={() => fillCanvas(0)}>Clear canvas</button>
     </Container>
   )
 }
@@ -71,5 +76,6 @@ const Container = styled.div`
 
 const Group = styled.div`
   display: flex;
+  align-items: center;
   gap: 8px;
 `
