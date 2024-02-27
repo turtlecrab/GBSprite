@@ -45,10 +45,10 @@ export function Settings() {
       </Group>
       <h2>Resize</h2>
       <Group>
-        <NumberInput min={1} max={20} value={cols} setValue={setCols} /> Columns
+        <NumberInput min={1} max={32} value={cols} setValue={setCols} /> Columns
       </Group>
       <Group>
-        <NumberInput min={1} max={18} value={rows} setValue={setRows} /> Rows
+        <NumberInput min={1} max={32} value={rows} setValue={setRows} /> Rows
       </Group>
       <Group>
         <button
