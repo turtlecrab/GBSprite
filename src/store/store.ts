@@ -2,18 +2,13 @@ import { StateCreator, StoreApi, create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 import { clamp, getLine, getPixelCoords } from '../lib/utils'
+import { kot } from './kot'
 import { bucket } from './tools/bucket'
 import { ellipse } from './tools/ellipse'
 import { hand } from './tools/hand'
 import { move } from './tools/move'
 import { pencil } from './tools/pencil'
 import { rect } from './tools/rect'
-
-const DEFAULT_TILE_SIZE = 8
-const DEFAULT_WIDTH = 1
-const DEFAULT_HEIGHT = 1
-const DEFAULT_PIXELS_SIZE =
-  DEFAULT_TILE_SIZE * DEFAULT_TILE_SIZE * DEFAULT_WIDTH * DEFAULT_HEIGHT
 
 export type Tool = 'pencil' | 'bucket' | 'rect' | 'ellipse' | 'hand' | 'move'
 export type MouseButton = 'left' | 'right' | 'middle'
@@ -121,10 +116,10 @@ export interface State {
 
 const initializer: StateCreator<State> = (set, get) => ({
   palette: ['#e0f8d0', '#88c070', '#346856', '#081820'],
-  tileSize: DEFAULT_TILE_SIZE,
-  width: DEFAULT_WIDTH,
-  height: DEFAULT_HEIGHT,
-  pixels: Array(DEFAULT_PIXELS_SIZE).fill(0),
+  tileSize: 8,
+  width: kot.width,
+  height: kot.height,
+  pixels: kot.pixels,
   color: 3,
   bgColor: null,
   tool: 'pencil',
