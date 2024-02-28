@@ -18,6 +18,9 @@ export function Export() {
   const withAsciiArtH = useStore(state => state.exportSettings.withAsciiArtH)
   const withConstantsC = useStore(state => state.exportSettings.withConstantsC)
   const withConstantsH = useStore(state => state.exportSettings.withConstantsH)
+  const showTileIndices = useStore(
+    state => state.exportSettings.showTileIndices,
+  )
   const setExportSettings = useStore(state => state.setExportSettings)
 
   // forbid 8x16 export for sprite with odd rows
@@ -206,6 +209,13 @@ export function Export() {
               )}
             </Radio>
           </div>
+          <br />
+          <Checkbox
+            value={showTileIndices}
+            setValue={v => setExportSettings({ showTileIndices: v })}
+          >
+            show tile indices
+          </Checkbox>
           <h3>{finalTitle}.c</h3>
           <Checkbox
             value={withAsciiArtC}

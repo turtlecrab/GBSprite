@@ -26,7 +26,10 @@ export function Canvas() {
   const zoom = useStore(state => state.zoom)
   const moveOffset = useStore(state => state.moveOffset)
   const showTileIndices = useStore(
-    state => state.tab === 'export' && state.exportSettings.formatTab === 'c',
+    state =>
+      state.tab === 'export' &&
+      state.exportSettings.formatTab === 'c' &&
+      state.exportSettings.showTileIndices,
   )
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)

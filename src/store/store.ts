@@ -62,6 +62,7 @@ export interface State {
     formatTab: 'png' | 'c'
     title: string
     mode: '8x8' | '8x16'
+    showTileIndices: boolean
     withAsciiArtC: boolean
     withConstantsC: boolean
     withAsciiArtH: boolean
@@ -154,6 +155,7 @@ const initializer: StateCreator<State> = (set, get) => ({
     formatTab: 'png',
     title: '',
     mode: '8x8',
+    showTileIndices: true,
     withAsciiArtC: true,
     withConstantsC: true,
     withAsciiArtH: false,
