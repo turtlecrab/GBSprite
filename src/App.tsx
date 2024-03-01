@@ -1,4 +1,5 @@
 import { styled } from '@linaria/react'
+import { Analytics } from '@vercel/analytics/react'
 import { useEffect } from 'react'
 import { Toaster } from 'react-hot-toast'
 
@@ -39,6 +40,7 @@ export default function App() {
         <Tabs />
       </Group>
       <Toaster />
+      <Analytics />
     </Main>
   )
 }
