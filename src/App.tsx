@@ -40,7 +40,7 @@ export default function App() {
         <Tabs />
       </Group>
       <Toaster />
-      <Analytics />
+      <Analytics scriptSrc="/in/script.js" />
     </Main>
   )
 }

@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/in/:match*",
+      "destination": "https://gbsprite.vercel.app/_vercel/insights/:match*"
+    }
+  ]
+}
