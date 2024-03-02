@@ -1,49 +1,42 @@
 import { styled } from '@linaria/react'
 import { ReactNode } from 'react'
-import { LuBug, LuFileDown, LuSettings, LuView, LuWrench } from 'react-icons/lu'
+import { LuWrench } from 'react-icons/lu'
 import { Drawer } from 'vaul'
 
 import { breakpoints } from '../breakpoints'
+import { tabsData } from '../data'
 import { useMediaQuery } from '../hooks/useMediaQuery'
-import { State, useStore } from '../store/store'
+import { useStore } from '../store/store'
 import { getTooltipProps } from '../tooltips'
-import { Debug } from './Debug'
-import { Export } from './Export'
 import { IconButton } from './IconButton'
-import { Preview } from './Preview'
-import { Settings } from './Settings'
-import { ToolSettings } from './ToolSettings'
 
-const tabs = {
-  tool: { name: 'Tool settings', component: ToolSettings, icon: LuWrench },
-  settings: { name: 'Settings', component: Settings, icon: LuSettings },
-  export: { name: 'Export', component: Export, icon: LuFileDown },
-  preview: { name: 'Preview', component: Preview, icon: LuView },
-  debug: { name: 'Debug', component: Debug, icon: LuBug },
-}
+const tabs = ['tool', 'settings', 'export', 'preview', 'debug'] as const
 
 export function Tabs() {
-  const tab = useStore(state => state.tab)
+  const currentTab = useStore(state => state.tab)
   const setTab = useStore(state => state.setTab)
 
   const isMobile = !useMediaQuery(breakpoints.md)
 
-  const TabComponent = tabs[tab].component
+  const TabComponent = tabsData[currentTab].component
   const ContainerComponent = isMobile ? Vaul : Container
 
   return (
     <ContainerComponent>
       <TabWrapper>
-        {Object.entries(tabs).map(([key, { name, icon: Icon }]) => (
-          <TabButton
-            key={key}
-            onClick={() => setTab(key as State['tab'])}
-            $active={tab === key}
-            {...getTooltipProps(name, 'up-right')}
-          >
-            <Icon />
-          </TabButton>
-        ))}
+        {tabs.map(tab => {
+          const Icon = tabsData[tab].icon
+          return (
+            <TabButton
+              key={tab}
+              onClick={() => setTab(tab)}
+              $active={tab === currentTab}
+              {...getTooltipProps(tabsData[tab].name, 'up-right')}
+            >
+              <Icon />
+            </TabButton>
+          )
+        })}
       </TabWrapper>
       <TabComponent />
     </ContainerComponent>

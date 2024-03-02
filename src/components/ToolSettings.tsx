@@ -1,16 +1,8 @@
 import { styled } from '@linaria/react'
 
+import { toolsData } from '../data'
 import { useStore } from '../store/store'
 import { Checkbox } from './Checkbox'
-
-const header = {
-  pencil: 'Pencil',
-  bucket: 'Paint Bucket',
-  rect: 'Rectangle',
-  ellipse: 'Ellipse',
-  hand: 'Hand',
-  move: 'Move',
-}
 
 export function ToolSettings() {
   const tool = useStore(state => state.tool)
@@ -20,7 +12,7 @@ export function ToolSettings() {
 
   return (
     <Container>
-      <h2>{header[tool]}</h2>
+      <h2>{toolsData[tool].name}</h2>
       {tool === 'pencil' && (
         <>
           <Checkbox

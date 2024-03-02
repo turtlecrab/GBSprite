@@ -2,6 +2,7 @@ import { styled } from '@linaria/react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { LuMaximize2 } from 'react-icons/lu'
 
+import { toolsData } from '../data'
 import { clamp, getPixelCoords } from '../lib/utils'
 import { Tool, useStore } from '../store/store'
 import { IconButton } from './IconButton'
@@ -270,18 +271,9 @@ function getPointerPixelCoords(e: React.PointerEvent, w: number, h: number) {
   return { x, y }
 }
 
-const cursors = {
-  pencil: 'crosshair',
-  bucket: 'crosshair',
-  rect: 'crosshair',
-  ellipse: 'crosshair',
-  hand: 'grab',
-  move: 'move',
-}
-
 function getCursor(altPressed: boolean, dragging: string | null, tool: Tool) {
   const isHandDrag = dragging === 'middle' || (tool === 'hand' && dragging)
-  return altPressed ? 'alias' : isHandDrag ? 'grabbing' : cursors[tool]
+  return altPressed ? 'alias' : isHandDrag ? 'grabbing' : toolsData[tool].cursor
 }
 
 const Container = styled.div`

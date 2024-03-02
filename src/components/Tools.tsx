@@ -1,25 +1,9 @@
 import { styled } from '@linaria/react'
-import {
-  LuCircle,
-  LuHand,
-  LuMove,
-  LuPaintBucket,
-  LuPencil,
-  LuRectangleHorizontal,
-} from 'react-icons/lu'
 
+import { toolsData } from '../data'
 import { Tool, useStore } from '../store/store'
 import { tooltips } from '../tooltips'
 import { IconButton } from './IconButton'
-
-const icons = {
-  pencil: LuPencil,
-  bucket: LuPaintBucket,
-  rect: LuRectangleHorizontal,
-  ellipse: LuCircle,
-  hand: LuHand,
-  move: LuMove,
-}
 
 const tools: Tool[] = ['pencil', 'bucket', 'rect', 'ellipse', 'move', 'hand']
 
@@ -33,7 +17,6 @@ export function Tools() {
         <ToolButton
           $selected={tool === t}
           onClick={() => setTool(t)}
-          aria-label={t}
           key={t}
           tooltip={tooltips[t]}
         >
@@ -45,11 +28,11 @@ export function Tools() {
 }
 
 function Icon({ tool }: { tool: Tool }) {
-  if (!(tool in icons)) {
+  if (!toolsData[tool]?.icon) {
     console.error('bad icon name')
     return <>😦</>
   }
-  const Comp = icons[tool]
+  const Comp = toolsData[tool].icon
   return <Comp />
 }
 
