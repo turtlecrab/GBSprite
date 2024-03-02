@@ -10,7 +10,7 @@ import { useStore } from '../store/store'
 import { getTooltipProps } from '../tooltips'
 import { IconButton } from './IconButton'
 
-const tabs = ['tool', 'settings', 'export', 'preview', 'debug'] as const
+const tabs = ['tool', 'settings', 'export', 'preview', 'info'] as const
 
 export function Tabs() {
   const currentTab = useStore(state => state.tab)

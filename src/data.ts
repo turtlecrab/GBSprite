@@ -3,6 +3,7 @@ import {
   LuCircle,
   LuFileDown,
   LuHand,
+  LuInfo,
   LuMove,
   LuPaintBucket,
   LuPencil,
@@ -14,6 +15,7 @@ import {
 
 import { Debug } from './components/Debug'
 import { Export } from './components/Export'
+import { Info } from './components/Info'
 import { Preview } from './components/Preview'
 import { Settings } from './components/Settings'
 import { ToolSettings } from './components/ToolSettings'
@@ -24,6 +26,7 @@ export const tabsData = {
   export: { name: 'Export', component: Export, icon: LuFileDown },
   preview: { name: 'Preview', component: Preview, icon: LuView },
   debug: { name: 'Debug', component: Debug, icon: LuBug },
+  info: { name: 'Info', component: Info, icon: LuInfo },
 }
 
 export const toolsData = {

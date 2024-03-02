@@ -57,7 +57,7 @@ export interface State {
   moveOffset: { x: number; y: number } | null
   canvasPos: { left: number; top: number }
   container: { width: number; height: number }
-  tab: 'tool' | 'settings' | 'export' | 'preview' | 'debug'
+  tab: 'tool' | 'settings' | 'export' | 'preview' | 'debug' | 'info'
   exportSettings: {
     formatTab: 'png' | 'c'
     title: string
