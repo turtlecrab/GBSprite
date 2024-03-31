@@ -1,15 +1,15 @@
 import { arePixelsAtRightAngle, getLine } from '../../lib/utils'
 import { Getter, MouseButton, Setter } from '../store'
 
-export const pencil = {
-  startDragging(index: number, button: MouseButton, set: Setter, get: Getter) {
+export const pencil = (set: Setter, get: Getter) => ({
+  startDragging(index: number, button: MouseButton) {
     set({
       dragging: button,
       draft: [...get().draft, [index, index]],
     })
   },
 
-  hoverPixel(index: number, set: Setter, get: Getter) {
+  movePointer(index: number) {
     if (index === get().lastHoveredPixel) return
     if (!get().dragging && !get().shiftPressed) return
 
@@ -59,4 +59,4 @@ export const pencil = {
       draft: [...get().draft, newLine],
     })
   },
-}
+})

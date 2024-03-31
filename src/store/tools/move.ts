@@ -1,14 +1,15 @@
 import { getPixelCoords } from '../../lib/utils'
 import { Getter, MouseButton, Setter } from '../store'
 
-export const move = {
-  startDragging(index: number, button: MouseButton, set: Setter, _get: Getter) {
+export const move = (set: Setter, get: Getter) => ({
+  startDragging(index: number, button: MouseButton) {
     set({
       dragging: button,
       draggingFrom: index,
     })
   },
-  hoverPixel(index: number, set: Setter, get: Getter) {
+
+  movePointer(index: number) {
     if (index === get().lastHoveredPixel) return
     if (!get().dragging || get().draggingFrom === null) return
 
@@ -16,7 +17,8 @@ export const move = {
 
     set({ moveOffset: getOffset(get().draggingFrom!, index, width) })
   },
-  stopDragging(set: Setter, get: Getter) {
+
+  stopDragging() {
     if (!get().moveOffset) return
 
     const width = get().width * get().tileSize
@@ -27,7 +29,7 @@ export const move = {
       moveOffset: null,
     })
   },
-}
+})
 
 function getOffsetImage(
   image: number[],

@@ -1,15 +1,16 @@
 import { getLine, getPixelCoords } from '../../lib/utils'
 import { Getter, MouseButton, Setter } from '../store'
 
-export const ellipse = {
-  startDragging(index: number, button: MouseButton, set: Setter, _get: Getter) {
+export const ellipse = (set: Setter, get: Getter) => ({
+  startDragging(index: number, button: MouseButton) {
     set({
       dragging: button,
       draggingFrom: index,
       draft: [[index]],
     })
   },
-  hoverPixel(index: number, set: Setter, get: Getter) {
+
+  movePointer(index: number) {
     if (index === get().lastHoveredPixel) return
     if (!get().dragging || get().draggingFrom === null) return
 
@@ -20,7 +21,8 @@ export const ellipse = {
 
     set({ draft: [plotEllipseRect(x0, y0, x1, y1, width)] })
   },
-  stopDragging(set: Setter, get: Getter) {
+
+  stopDragging() {
     if (!get().toolSettings.filledEllipse) {
       get().commitDraft()
       return
@@ -51,7 +53,7 @@ export const ellipse = {
     get().commitDraft()
     set({ lastDrawnPixel: null })
   },
-}
+})
 
 /**
  * http://members.chello.at/easyfilter/bresenham.html#ellipse

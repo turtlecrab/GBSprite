@@ -1,15 +1,16 @@
 import { getLineByCoords, getPixelCoords } from '../../lib/utils'
 import { Getter, MouseButton, Setter } from '../store'
 
-export const rect = {
-  startDragging(index: number, button: MouseButton, set: Setter, _get: Getter) {
+export const rect = (set: Setter, get: Getter) => ({
+  startDragging(index: number, button: MouseButton) {
     set({
       dragging: button,
       draggingFrom: index,
       draft: [[index]],
     })
   },
-  hoverPixel(index: number, set: Setter, get: Getter) {
+
+  movePointer(index: number) {
     if (index === get().lastHoveredPixel) return
     if (!get().dragging || get().draggingFrom === null) return
 
@@ -27,7 +28,8 @@ export const rect = {
       ],
     })
   },
-  stopDragging(set: Setter, get: Getter) {
+
+  stopDragging() {
     if (!get().toolSettings.filledRect) {
       get().commitDraft()
       return
@@ -49,4 +51,4 @@ export const rect = {
     set({ draft: filledDraft })
     get().commitDraft()
   },
-}
+})

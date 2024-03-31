@@ -34,7 +34,7 @@ export function Canvas() {
   )
   const startDragging = useStore(state => state.startDragging)
   const stopDragging = useStore(state => state.stopDragging)
-  const hoverPixel = useStore(state => state.hoverPixel)
+  const movePointer = useStore(state => state.movePointer)
   const clearLastHoveredPixel = useStore(state => state.clearLastHoveredPixel)
   const changeZoom = useStore(state => state.changeZoom)
   const moveCanvasPos = useStore(state => state.moveCanvasPos)
@@ -166,7 +166,7 @@ export function Canvas() {
 
   function pointerMove(e: React.PointerEvent) {
     const { x, y } = getPointerPixelCoords(e, pixelWidth, pixelHeight)
-    hoverPixel(y * pixelWidth + x, e.movementX, e.movementY)
+    movePointer(y * pixelWidth + x, e.movementX, e.movementY)
   }
 
   useEffect(() => {
